@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --background: #F9FAFB;
+  --foreground: #1E1B4B;
+}
+
+body {
+  color: var(--foreground);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* High contrast for Section 508 compliance */
+@layer base {
+  body {
+    @apply text-white;
+  }
+  
+  /* Ensure text on white backgrounds is dark */
+  .bg-white,
+  .jackbox-card {
+    @apply text-gray-900;
+  }
+  
+  /* Ensure text on gradient/dark backgrounds is white */
+  .jackbox-gradient-bg {
+    @apply text-white;
+  }
+}
+
+/* Jackbox-style components */
+@layer components {
+  .jackbox-card {
+    @apply bg-white rounded-2xl shadow-jackbox p-6 transition-all duration-300;
+  }
+  
+  .jackbox-card:hover {
+    @apply shadow-jackbox-lg transform -translate-y-1;
+  }
+  
+  .jackbox-button {
+    @apply px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform;
+    @apply shadow-lg hover:shadow-xl hover:scale-105 active:scale-95;
+  }
+  
+  .jackbox-button-primary {
+    @apply jackbox-button bg-gradient-to-r from-jackbox-purple to-jackbox-blue text-white;
+    @apply hover:from-jackbox-blue hover:to-jackbox-purple;
+  }
+  
+  .jackbox-button-secondary {
+    @apply jackbox-button bg-white text-jackbox-purple border-2 border-jackbox-purple;
+    @apply hover:bg-jackbox-purple hover:text-white;
+  }
+  
+  .jackbox-input {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-gray-300;
+    @apply focus:border-jackbox-purple focus:ring-2 focus:ring-jackbox-purple/20;
+    @apply transition-all duration-200;
+    @apply bg-gray-800 text-white placeholder-gray-400;
+    @apply border-gray-600;
+  }
+  
+  .jackbox-input:focus {
+    @apply border-jackbox-purple bg-gray-900;
+  }
+  
+  .jackbox-input-light {
+    @apply bg-white text-gray-900 placeholder-gray-500 border-gray-300;
+  }
+  
+  .jackbox-input-light:focus {
+    @apply border-jackbox-purple bg-white;
+  }
+  
+  .jackbox-title {
+    @apply text-4xl font-bold;
+  }
+  
+  .jackbox-title-gradient {
+    @apply bg-gradient-to-r from-jackbox-purple via-jackbox-pink to-jackbox-orange;
+    @apply bg-clip-text text-transparent;
+  }
+  
+  .jackbox-subtitle {
+    @apply text-xl font-medium;
+  }
+  
+  .jackbox-subtitle-light {
+    @apply text-white/90;
+  }
+  
+  .jackbox-subtitle-dark {
+    @apply text-gray-600;
+  }
+  
+  .jackbox-badge {
+    @apply px-3 py-1 rounded-full text-sm font-semibold;
+  }
+  
+  .jackbox-badge-purple {
+    @apply jackbox-badge bg-jackbox-purple/10 text-jackbox-purple;
+  }
+  
+  .jackbox-badge-blue {
+    @apply jackbox-badge bg-jackbox-blue/10 text-jackbox-blue;
+  }
+  
+  .jackbox-badge-green {
+    @apply jackbox-badge bg-jackbox-green/10 text-jackbox-green;
+  }
+}
+
+/* Focus indicators for keyboard navigation */
+@layer utilities {
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-jackbox-purple/50 focus-visible:ring-offset-2;
+  }
+  
+  .jackbox-gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+

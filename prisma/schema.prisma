@@ -1,0 +1,271 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CORE USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(CLINICIAN)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  careTeamMemberships CareTeamMember[]
+  createdSessions     Session[]
+  auditLogs           AuditLog[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  FACILITATOR  // Can create and run sessions
+  CLINICIAN    // Can view summaries and saved responses
+}
+
+// ============================================
+// CARE TEAM STRUCTURE
+// ============================================
+
+model CareTeam {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  members     CareTeamMember[]
+  sessions    Session[]
+  
+  @@map("care_teams")
+}
+
+model CareTeamMember {
+  id          String        @id @default(cuid())
+  careTeamId  String
+  userId      String
+  role        CareTeamRole  @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+  
+  // Relations
+  careTeam    CareTeam      @relation(fields: [careTeamId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([careTeamId, userId])
+  @@map("care_team_members")
+}
+
+enum CareTeamRole {
+  LEAD      // Can manage team and create sessions
+  MEMBER    // Can view summaries and saved responses
+}
+
+// ============================================
+// CONTENT MANAGEMENT
+// ============================================
+
+model PromptPack {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  topicTags   String[] // e.g., ["anxiety", "depression", "relationships"]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  prompts     Prompt[]
+  sessions    Session[]
+  
+  @@map("prompt_packs")
+}
+
+model Prompt {
+  id                String   @id @default(cuid())
+  promptPackId      String
+  text              String
+  topicTags         String[]
+  intensity         Int      @default(3) // 1-5 scale
+  facilitatorNotes  String?  // Private notes for facilitator
+  order             Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  promptPack        PromptPack @relation(fields: [promptPackId], references: [id], onDelete: Cascade)
+  responses         Response[]
+  sessions          Session[]  @relation("SessionCurrentPrompt")
+  
+  @@map("prompts")
+}
+
+model MediaAsset {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  type        MediaType
+  url         String     // Uploaded file URL or external URL
+  mimeType    String?
+  sizeBytes   Int?
+  createdAt   DateTime   @default(now())
+  
+  // Relations
+  sessions    Session[]
+  
+  @@map("media_assets")
+}
+
+enum MediaType {
+  VIDEO
+  AUDIO
+  IMAGE
+  DOCUMENT
+}
+
+// ============================================
+// SESSION & PARTICIPANT DATA
+// ============================================
+
+model Session {
+  id                String        @id @default(cuid())
+  careTeamId        String
+  facilitatorId     String
+  moduleId          String        // e.g., "cbt_reframe_relay"
+  promptPackId      String
+  roomCode          String        @unique // 6-character alphanumeric
+  status            SessionStatus @default(CREATED)
+  numRounds         Int           @default(3)
+  sharingDefaults   Json          // Module-specific sharing defaults
+  introMediaId      String?       // Required intro media
+  currentRound      Int           @default(0)
+  currentPromptId   String?
+  introCompleted    Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  startedAt         DateTime?
+  endedAt           DateTime?
+  purgeAfter        DateTime      // Auto-purge timestamp (createdAt + 72 hours)
+  
+  // Relations
+  careTeam          CareTeam      @relation(fields: [careTeamId], references: [id], onDelete: Restrict)
+  facilitator       User          @relation(fields: [facilitatorId], references: [id], onDelete: Restrict)
+  promptPack        PromptPack    @relation(fields: [promptPackId], references: [id], onDelete: Restrict)
+  introMedia        MediaAsset?   @relation(fields: [introMediaId], references: [id], onDelete: SetNull)
+  currentPrompt     Prompt?       @relation("SessionCurrentPrompt", fields: [currentPromptId], references: [id], onDelete: SetNull)
+  participants      Participant[]
+  responses         Response[]
+  summary           SessionSummary?
+  auditLogs         AuditLog[]
+  
+  @@index([roomCode])
+  @@index([purgeAfter]) // For purge job
+  @@map("sessions")
+}
+
+enum SessionStatus {
+  CREATED      // Session created, waiting for participants
+  LOBBY        // Participants joining
+  INTRO        // Intro media playing
+  IN_PROGRESS  // Active rounds
+  ENDED        // Session completed
+}
+
+model Participant {
+  id              String   @id @default(cuid())
+  sessionId       String
+  nickname        String   // Anonymous display name
+  pseudonymId     String?  // Optional facilitator-provided pseudonymous ID
+  socketId        String?  // Current WebSocket connection ID
+  joinedAt        DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+  
+  // Relations
+  session         Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  responses       Response[]
+  
+  @@index([sessionId])
+  @@map("participants")
+}
+
+model Response {
+  id                String   @id @default(cuid())
+  sessionId         String
+  participantId     String
+  promptId          String
+  roundNumber       Int
+  alternativeThought String  // Required field for CBT Reframe Relay
+  automaticThought  String?  // Optional
+  emotionPre        Int?     // 0-10, optional
+  emotionPost       Int?     // 0-10, optional
+  submittedAt       DateTime @default(now())
+  
+  // Moderation flags
+  isSpotlighted     Boolean  @default(false) // Shown anonymously to group
+  isHidden          Boolean  @default(false) // Hidden from facilitator view
+  isSavedForFollowup Boolean @default(false) // Saved to summary
+  
+  // Relations
+  session           Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  prompt            Prompt     @relation(fields: [promptId], references: [id], onDelete: Restrict)
+  
+  @@index([sessionId])
+  @@map("responses")
+}
+
+// ============================================
+// SESSION SUMMARY (TEMPORARY)
+// ============================================
+
+model SessionSummary {
+  id                String   @id @default(cuid())
+  sessionId         String   @unique
+  moduleId          String
+  numRounds         Int
+  attendanceNote    String   // e.g., "present", "partial"
+  savedResponses    Json     // Array of responses marked for follow-up
+  generatedAt       DateTime @default(now())
+  purgeAfter        DateTime // Auto-purge timestamp (generatedAt + 72 hours)
+  
+  // Relations
+  session           Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([purgeAfter]) // For purge job
+  @@map("session_summaries")
+}
+
+// ============================================
+// AUDIT LOGGING
+// ============================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String
+  sessionId   String?
+  action      String   // e.g., "VIEW_SUMMARY", "ACCESS_SAVED_RESPONSE", "CREATE_SESSION"
+  resourceType String? // e.g., "SessionSummary", "Response"
+  resourceId  String?
+  metadata    Json?    // Additional context
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  session     Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
