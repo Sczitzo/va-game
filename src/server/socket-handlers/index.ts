@@ -7,7 +7,11 @@ import { prisma } from '@/lib/prisma';
 export function setupSocketHandlers(io: SocketIOServer) {
   io.use(async (socket, next) => {
     // Basic connection validation
-    // In production, you'd validate authentication tokens here
+    // Extract userId from handshake auth
+    const userId = socket.handshake.auth.userId;
+    if (userId) {
+      socket.data.userId = userId;
+    }
     next();
   });
 
