@@ -91,8 +91,10 @@ async function handleJoin(
   }
 
   // Broadcast updates
-  await broadcastSessionState(io, session.id);
-  await broadcastParticipantList(io, session.id);
+  await Promise.all([
+    broadcastSessionState(io, session.id),
+    broadcastParticipantList(io, session.id),
+  ]);
 
   // Send join confirmation
   socket.emit('server', {
