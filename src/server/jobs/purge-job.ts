@@ -59,12 +59,20 @@ export async function purgeExpiredSessions(): Promise<void> {
       },
     });
 
-    for (const summary of expiredSummaries) {
-      await prisma.sessionSummary.delete({
-        where: { id: summary.id },
+    if (expiredSummaries.length > 0) {
+      const summaryIds = expiredSummaries.map((s) => s.id);
+
+      await prisma.sessionSummary.deleteMany({
+        where: {
+          id: {
+            in: summaryIds,
+          },
+        },
       });
 
-      console.log(`Purged expired session summary: ${summary.id}`);
+      for (const summary of expiredSummaries) {
+        console.log(`Purged expired session summary: ${summary.id}`);
+      }
     }
 
     if (expiredSessions.length > 0 || expiredSummaries.length > 0) {
