@@ -9,24 +9,28 @@ interface GameInstructionsProps {
 
 export function GameInstructions({ moduleId }: GameInstructionsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const module = getModule(moduleId);
+  const gameModule = getModule(moduleId);
 
-  if (!module) return null;
+  if (!gameModule) return null;
 
   return (
     <div className="jackbox-card">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between mb-2"
-        aria-expanded={isExpanded}
-      >
-        <h2 className="text-lg font-bold text-jackbox-purple">📖 Game Instructions</h2>
-        <span className="text-2xl">{isExpanded ? '−' : '+'}</span>
-      </button>
+      <h2>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between mb-2 rounded-lg focus-visible-ring"
+          aria-expanded={isExpanded}
+          aria-controls="game-instructions-content"
+          aria-label={isExpanded ? 'Collapse game instructions' : 'Expand game instructions'}
+        >
+          <span className="text-lg font-bold text-jackbox-purple">📖 Game Instructions</span>
+          <span className="text-2xl" aria-hidden="true">{isExpanded ? '−' : '+'}</span>
+        </button>
+      </h2>
       
       {isExpanded && (
-        <div className="text-gray-700 whitespace-pre-line">
-          {module.instructions.split('\n').map((line, i) => {
+        <div id="game-instructions-content" className="text-gray-700 whitespace-pre-line">
+          {gameModule.instructions.split('\n').map((line, i) => {
             // Bold headers (markdown **text**)
             if (line.match(/^\*\*.*\*\*$/)) {
               return (
@@ -63,4 +67,3 @@ export function GameInstructions({ moduleId }: GameInstructionsProps) {
     </div>
   );
 }
-

@@ -84,6 +84,11 @@ async function handleCreateSession(
 ): Promise<void> {
   // TODO: Validate facilitator permissions
   // For now, assume socket has userId in handshake.auth or similar
+
+  const userId = socket.data.userId;
+  if (!userId) {
+    throw new Error('Unauthorized: No user ID found');
+  }
   
   const roomCode = generateRoomCode();
   const purgeAfter = new Date();
@@ -92,7 +97,7 @@ async function handleCreateSession(
   const session = await prisma.session.create({
     data: {
       careTeamId: payload.careTeamId,
-      facilitatorId: 'temp-facilitator-id', // TODO: Get from auth
+      facilitatorId: userId,
       moduleId: payload.moduleId,
       promptPackId: payload.promptPackId,
       roomCode,

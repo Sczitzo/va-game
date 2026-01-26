@@ -79,11 +79,9 @@ export default function ParticipantSessionPage() {
         case 'joined':
           setSessionId(message.payload.sessionId);
           setParticipantId(message.payload.participantId);
-          // Fetch module ID from session
-          if (message.payload.sessionId) {
-            fetch(`/api/sessions/${message.payload.sessionId}`)
-              .then((res) => res.json())
-              .then((data) => setModuleId(data.session?.moduleId || ''));
+          // Set module ID directly from payload
+          if (message.payload.moduleId) {
+            setModuleId(message.payload.moduleId);
           }
           break;
         case 'sessionState':

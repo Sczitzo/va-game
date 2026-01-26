@@ -99,8 +99,10 @@ async function handleJoin(
   }
 
   // Broadcast updates
-  await broadcastSessionState(io, session.id, currentSession);
-  await broadcastParticipantList(io, session.id);
+  await Promise.all([
+    broadcastSessionState(io, session.id, currentSession),
+    broadcastParticipantList(io, session.id),
+  ]);
 
   // Send join confirmation
   socket.emit('server', {
@@ -109,6 +111,7 @@ async function handleJoin(
     payload: {
       sessionId: session.id,
       participantId: participant.id,
+      moduleId: session.moduleId,
     },
   });
 }
@@ -119,10 +122,15 @@ async function handleSubmitResponse(
   sessionId: string,
   payload: SubmitResponsePayload
 ): Promise<void> {
-  // Find participant by socket ID
-  const participant = await prisma.participant.findFirst({
-    where: { socketId: socket.id, sessionId },
-  });
+  // Find participant and session in parallel
+  const [participant, session] = await Promise.all([
+    prisma.participant.findFirst({
+      where: { socketId: socket.id, sessionId },
+    }),
+    prisma.session.findUnique({
+      where: { id: sessionId },
+    }),
+  ]);
 
   if (!participant) {
     socket.emit('server', {
@@ -135,11 +143,6 @@ async function handleSubmitResponse(
     });
     return;
   }
-
-  // Get session
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-  });
 
   if (!session) {
     socket.emit('server', {
@@ -154,8 +157,8 @@ async function handleSubmitResponse(
   }
 
   // Get module
-  const module = getModule(session.moduleId);
-  if (!module) throw new Error(`Module ${session.moduleId} not found`);
+  const gameModule = getModule(session.moduleId);
+  if (!gameModule) throw new Error(`Module ${session.moduleId} not found`);
 
   // Handle Thought Reframe Relay module differently
   if (session.moduleId === 'thought_reframe_relay') {
@@ -177,7 +180,7 @@ async function handleSubmitResponse(
 
     // Validate payload
     try {
-      module.participantInputSchema.parse({
+      gameModule.participantInputSchema.parse({
         reframe: payload.reframe,
         isPass: payload.isPass || false,
       });
@@ -193,12 +196,24 @@ async function handleSubmitResponse(
       return;
     }
 
+    if (!payload.promptId) {
+      socket.emit('server', {
+        type: 'error',
+        sessionId,
+        payload: {
+          code: 'INVALID_RESPONSE',
+          message: 'Missing promptId.',
+        },
+      });
+      return;
+    }
+
     // Handle Thought Reframe Relay response
     await handleThoughtReframeResponse(
       io,
       socket,
       sessionId,
-      payload.promptId,
+      payload.promptId as string,
       payload.reframe || '',
       payload.isPass || false,
       participant.id
@@ -219,7 +234,7 @@ async function handleSubmitResponse(
 
     // Validate response against module schema
     try {
-      module.participantInputSchema.parse(payload);
+      gameModule.participantInputSchema.parse(payload);
     } catch (error) {
       socket.emit('server', {
         type: 'error',
@@ -237,7 +252,7 @@ async function handleSubmitResponse(
       data: {
         sessionId,
         participantId: participant.id,
-        promptId: payload.promptId,
+        promptId: payload.promptId as string,
         roundNumber: session.currentRound,
         alternativeThought: payload.alternativeThought || '',
         automaticThought: payload.automaticThought,
