@@ -9,8 +9,13 @@ export async function purgeExpiredSessions(): Promise<void> {
   const now = new Date();
 
   try {
-    // Find all sessions that should be purged
-    const expiredSessions = await prisma.session.findMany({
+    // Delete all sessions that should be purged
+    // Cascade delete will handle:
+    // - Participants
+    // - Responses
+    // - SessionSummary
+    // - AuditLogs (setNull on sessionId)
+    const { count: deletedSessionsCount } = await prisma.session.deleteMany({
       where: {
         purgeAfter: {
           lte: now,
@@ -19,57 +24,20 @@ export async function purgeExpiredSessions(): Promise<void> {
           not: 'ENDED',
         },
       },
-      select: {
-        id: true,
-      },
     });
 
-    for (const session of expiredSessions) {
-      // Cascade delete will handle:
-      // - Participants
-      // - Responses
-      // - SessionSummary
-      // - AuditLogs (setNull on sessionId)
-
-      await prisma.session.update({
-        where: { id: session.id },
-        data: {
-          status: 'ENDED',
-          endedAt: now,
-        },
-      });
-
-      // Delete session (cascade will handle related records)
-      await prisma.session.delete({
-        where: { id: session.id },
-      });
-
-      console.log(`Purged expired session: ${session.id}`);
-    }
-
     // Also purge expired session summaries
-    const expiredSummaries = await prisma.sessionSummary.findMany({
+    const { count: deletedSummariesCount } = await prisma.sessionSummary.deleteMany({
       where: {
         purgeAfter: {
           lte: now,
         },
       },
-      select: {
-        id: true,
-      },
     });
 
-    for (const summary of expiredSummaries) {
-      await prisma.sessionSummary.delete({
-        where: { id: summary.id },
-      });
-
-      console.log(`Purged expired session summary: ${summary.id}`);
-    }
-
-    if (expiredSessions.length > 0 || expiredSummaries.length > 0) {
+    if (deletedSessionsCount > 0 || deletedSummariesCount > 0) {
       console.log(
-        `Purge job completed: ${expiredSessions.length} sessions, ${expiredSummaries.length} summaries`
+        `Purge job completed: ${deletedSessionsCount} sessions, ${deletedSummariesCount} summaries`
       );
     }
   } catch (error) {
@@ -91,4 +59,3 @@ export function startPurgeJob(): void {
     purgeExpiredSessions();
   }, PURGE_INTERVAL_MS);
 }
-
