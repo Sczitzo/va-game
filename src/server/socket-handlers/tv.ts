@@ -82,6 +82,7 @@ async function handleTVJoin(
     payload: {
       sessionId: session.id,
       role: 'tv',
+      moduleId: session.moduleId,
     },
   });
 

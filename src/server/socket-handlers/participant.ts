@@ -101,6 +101,7 @@ async function handleJoin(
     payload: {
       sessionId: session.id,
       participantId: participant.id,
+      moduleId: session.moduleId,
     },
   });
 }
@@ -146,8 +147,8 @@ async function handleSubmitResponse(
   }
 
   // Get module
-  const module = getModule(session.moduleId);
-  if (!module) throw new Error(`Module ${session.moduleId} not found`);
+  const gameModule = getModule(session.moduleId);
+  if (!gameModule) throw new Error(`Module ${session.moduleId} not found`);
 
   // Handle Thought Reframe Relay module differently
   if (session.moduleId === 'thought_reframe_relay') {
@@ -169,7 +170,7 @@ async function handleSubmitResponse(
 
     // Validate payload
     try {
-      module.participantInputSchema.parse({
+      gameModule.participantInputSchema.parse({
         reframe: payload.reframe,
         isPass: payload.isPass || false,
       });
@@ -211,7 +212,7 @@ async function handleSubmitResponse(
 
     // Validate response against module schema
     try {
-      module.participantInputSchema.parse(payload);
+      gameModule.participantInputSchema.parse(payload);
     } catch (error) {
       socket.emit('server', {
         type: 'error',
