@@ -49,6 +49,7 @@ async function handleTVJoin(
       where: { roomCode: roomCode.toUpperCase() },
       include: {
         currentPrompt: true,
+        introMedia: true,
       },
     });
 
@@ -67,79 +68,79 @@ async function handleTVJoin(
 
     console.log(`[TV] Session found: ${session.id}, module: ${session.moduleId}`);
 
-  // Join TV to public room (read-only, sees only spotlighted content)
-  socket.join(`public:${session.id}`);
-  socket.join(`session:${session.id}`);
+    // Join TV to public room (read-only, sees only spotlighted content)
+    socket.join(`public:${session.id}`);
+    socket.join(`session:${session.id}`);
 
-  // Mark socket as TV viewer
-  socket.data.role = 'tv';
-  socket.data.sessionId = session.id;
+    // Mark socket as TV viewer
+    socket.data.role = 'tv';
+    socket.data.sessionId = session.id;
 
-  // Send current state
-  socket.emit('server', {
-    type: 'joined',
-    sessionId: session.id,
-    payload: {
+    // Send current state
+    socket.emit('server', {
+      type: 'joined',
       sessionId: session.id,
-      role: 'tv',
-    },
-  });
+      payload: {
+        sessionId: session.id,
+        role: 'tv',
+      },
+    });
 
-  // Send current session state
-  await broadcastSessionState(io, session.id);
+    // Send current session state
+    await broadcastSessionState(io, session.id, session);
 
-  // Send current prompt if exists
-  if (session.currentPromptId) {
-    await broadcastCurrentPrompt(io, session.id, session.currentPromptId);
-  }
-
-  // Send current spotlighted responses
-  await broadcastSpotlightedResponses(io, session.id);
-
-  // For Thought Reframe Relay, send module state
-  if (session.moduleId === 'thought_reframe_relay') {
-    const defaults = (session.sharingDefaults as any) || {};
-    const moduleState = defaults.moduleState || 'LOBBY';
-    
-    socket.emit('thoughtReframeRelay:state', { state: moduleState });
-
-    if (session.currentPrompt) {
-      socket.emit('thoughtReframeRelay:prompt', {
-        prompt: {
-          id: session.currentPrompt.id,
-          text: session.currentPrompt.text,
-          roundNumber: session.currentRound,
-        },
-      });
+    // Send current prompt if exists
+    if (session.currentPromptId) {
+      await broadcastCurrentPrompt(io, session.id, session.currentPromptId);
     }
 
-    // Send current spotlighted responses for Thought Reframe Relay
-    const responses = await prisma.response.findMany({
-      where: {
-        sessionId: session.id,
-        isSpotlighted: true,
-        isHidden: false,
-        alternativeThought: { not: '__PASS__' },
-      },
-      orderBy: { submittedAt: 'asc' },
-    });
+    // Send current spotlighted responses
+    await broadcastSpotlightedResponses(io, session.id);
 
-    socket.emit('thoughtReframeRelay:spotlighted', {
-      responses: responses.map((r) => ({
-        id: r.id,
-        reframe: r.alternativeThought || '',
-      })),
-    });
+    // For Thought Reframe Relay, send module state
+    if (session.moduleId === 'thought_reframe_relay') {
+      const defaults = (session.sharingDefaults as any) || {};
+      const moduleState = defaults.moduleState || 'LOBBY';
 
-    // Send anonymous count
-    const count = await prisma.response.count({
-      where: {
-        sessionId: session.id,
-        alternativeThought: { not: '__PASS__' },
-      },
-    });
+      socket.emit('thoughtReframeRelay:state', { state: moduleState });
 
-    socket.emit('thoughtReframeRelay:anonymousCount', { count });
+      if (session.currentPrompt) {
+        socket.emit('thoughtReframeRelay:prompt', {
+          prompt: {
+            id: session.currentPrompt.id,
+            text: session.currentPrompt.text,
+            roundNumber: session.currentRound,
+          },
+        });
+      }
+
+      // Send current spotlighted responses for Thought Reframe Relay
+      const responses = await prisma.response.findMany({
+        where: {
+          sessionId: session.id,
+          isSpotlighted: true,
+          isHidden: false,
+          alternativeThought: { not: '__PASS__' },
+        },
+        orderBy: { submittedAt: 'asc' },
+      });
+
+      socket.emit('thoughtReframeRelay:spotlighted', {
+        responses: responses.map((r) => ({
+          id: r.id,
+          reframe: r.alternativeThought || '',
+        })),
+      });
+
+      // Send anonymous count
+      const count = await prisma.response.count({
+        where: {
+          sessionId: session.id,
+          alternativeThought: { not: '__PASS__' },
+        },
+      });
+
+      socket.emit('thoughtReframeRelay:anonymousCount', { count });
     }
     
     console.log(`[TV] Successfully joined session: ${session.id}`);
@@ -155,4 +156,3 @@ async function handleTVJoin(
     });
   }
 }
-
