@@ -192,8 +192,10 @@ async function handleNextPrompt(
     },
   });
 
-  await broadcastSessionState(io, updatedSession.id);
-  await broadcastCurrentPrompt(io, updatedSession.id, payload.promptId);
+  await Promise.all([
+    broadcastSessionState(io, updatedSession.id),
+    broadcastCurrentPrompt(io, updatedSession.id, payload.promptId),
+  ]);
 }
 
 async function handleSpotlightResponse(
@@ -253,10 +255,10 @@ async function handleEndSession(
   if (!session) throw new Error('Session not found');
 
   // Generate session summary
-  const module = getModule(session.moduleId);
-  if (!module) throw new Error(`Module ${session.moduleId} not found`);
+  const sessionModule = getModule(session.moduleId);
+  if (!sessionModule) throw new Error(`Module ${session.moduleId} not found`);
 
-  const summaryData = await module.generateSummary(
+  const summaryData = await sessionModule.generateSummary(
     session,
     session.responses,
     session.participants
