@@ -61,7 +61,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   if (isSkipped) {
     return (
       <div className="jackbox-card text-center">
-        <div className="text-4xl mb-3">⏭️</div>
+        <div className="text-4xl mb-3" aria-hidden="true">⏭️</div>
         <p className="text-gray-700 font-medium">You skipped this prompt.</p>
         <p className="text-sm text-gray-600 mt-1">Waiting for next round...</p>
       </div>
@@ -70,7 +70,9 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="jackbox-card space-y-5">
-      <h2 className="text-xl font-bold mb-4 text-jackbox-purple">✍️ Your Response</h2>
+      <h2 className="text-xl font-bold mb-4 text-jackbox-purple">
+        <span aria-hidden="true">✍️</span> Your Response
+      </h2>
 
           <div>
             <label htmlFor="alternativeThought" className="block text-sm font-semibold mb-2 text-gray-900">
@@ -86,6 +88,9 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
             />
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {alternativeThought.length} characters
+            </div>
           </div>
 
           <div>
@@ -140,7 +145,11 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               disabled={isSubmitting || !alternativeThought.trim()}
               className="flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? '⏳ Submitting...' : '🚀 Submit'}
+              {isSubmitting ? (
+                <><span aria-hidden="true">⏳</span> Submitting...</>
+              ) : (
+                <><span aria-hidden="true">🚀</span> Submit</>
+              )}
             </button>
 
             <button
@@ -148,7 +157,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               onClick={handleSkip}
               className="jackbox-button-secondary focus-visible-ring"
             >
-              ⏭️ Skip
+              <span aria-hidden="true">⏭️</span> Skip
             </button>
           </div>
     </form>
