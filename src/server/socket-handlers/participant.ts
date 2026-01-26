@@ -101,6 +101,7 @@ async function handleJoin(
     payload: {
       sessionId: session.id,
       participantId: participant.id,
+      moduleId: session.moduleId,
     },
   });
 }

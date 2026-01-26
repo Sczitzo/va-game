@@ -104,11 +104,19 @@ export interface ServerMessage {
 }
 
 export type ServerMessageType =
+  | 'joined'
   | 'sessionState'
   | 'currentPrompt'
   | 'responsesUpdate'
   | 'participantListUpdate'
   | 'error';
+
+export interface JoinedPayload {
+  sessionId: string;
+  participantId?: string;
+  role?: string;
+  moduleId: string;
+}
 
 export interface SessionStatePayload {
   status: SessionStatus;
