@@ -1,4 +1,5 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
+import { Session, MediaAsset } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getModule } from '@/modules';
 import type {
@@ -9,18 +10,20 @@ import type {
   ParticipantListUpdatePayload,
 } from '@/types/websocket';
 
+type SessionWithMedia = Session & { introMedia: MediaAsset | null };
+
 /**
  * Broadcast session state to all clients in a session
  */
 export async function broadcastSessionState(
   io: SocketIOServer,
-  sessionId: string
+  sessionId: string,
+  preloadedSession?: SessionWithMedia
 ): Promise<void> {
-  const session = await prisma.session.findUnique({
+  const session = preloadedSession || await prisma.session.findUnique({
     where: { id: sessionId },
     include: {
       introMedia: true,
-      currentPrompt: true,
     },
   });
 
@@ -149,4 +152,3 @@ export async function broadcastParticipantList(
 
   io.to(`session:${sessionId}`).emit('server', message);
 }
-

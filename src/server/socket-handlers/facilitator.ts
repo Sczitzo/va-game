@@ -116,7 +116,7 @@ async function handleCreateSession(
   socket.join(`facilitator:${session.id}`);
 
   // Broadcast session state
-  await broadcastSessionState(io, session.id);
+  await broadcastSessionState(io, session.id, session);
 
   // Send session created confirmation
   socket.emit('server', {

@@ -49,6 +49,7 @@ async function handleTVJoin(
       where: { roomCode: roomCode.toUpperCase() },
       include: {
         currentPrompt: true,
+        introMedia: true,
       },
     });
 
@@ -88,7 +89,7 @@ async function handleTVJoin(
 
   // Send current session state, prompt, and spotlighted responses in parallel
   const broadcastPromises = [
-    broadcastSessionState(io, session.id),
+    broadcastSessionState(io, session.id, session), // Pass session optimization
     broadcastSpotlightedResponses(io, session.id),
   ];
 
@@ -105,7 +106,7 @@ async function handleTVJoin(
   if (session.moduleId === 'thought_reframe_relay') {
     const defaults = (session.sharingDefaults as any) || {};
     const moduleState = defaults.moduleState || 'LOBBY';
-    
+
     socket.emit('thoughtReframeRelay:state', { state: moduleState });
 
     if (session.currentPrompt) {
@@ -160,4 +161,3 @@ async function handleTVJoin(
     });
   }
 }
-

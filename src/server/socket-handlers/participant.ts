@@ -13,6 +13,7 @@ import {
   broadcastSpotlightedResponses,
 } from './broadcast';
 import { handleThoughtReframeResponse } from './modules/thought-reframe-relay';
+import { SessionStatus } from '@prisma/client';
 
 export async function handleParticipantMessage(
   io: SocketIOServer,
@@ -42,6 +43,9 @@ async function handleJoin(
   // Find session by room code
   const session = await prisma.session.findUnique({
     where: { roomCode: payload.roomCode },
+    include: {
+      introMedia: true,
+    },
   });
 
   if (!session) {
@@ -82,17 +86,21 @@ async function handleJoin(
   socket.join(`session:${session.id}`);
   socket.join(`participant:${participant.id}`);
 
+  let currentSession = session;
+
   // Update session status to LOBBY if it was CREATED
   if (session.status === 'CREATED') {
     await prisma.session.update({
       where: { id: session.id },
       data: { status: 'LOBBY' },
     });
+    // Update local object to reflect change
+    currentSession = { ...session, status: 'LOBBY' as SessionStatus };
   }
 
   // Broadcast updates
   await Promise.all([
-    broadcastSessionState(io, session.id),
+    broadcastSessionState(io, session.id, currentSession),
     broadcastParticipantList(io, session.id),
   ]);
 
@@ -246,7 +254,7 @@ async function handleSubmitResponse(
         participantId: participant.id,
         promptId: payload.promptId as string,
         roundNumber: session.currentRound,
-        alternativeThought: payload.alternativeThought as string,
+        alternativeThought: payload.alternativeThought || '',
         automaticThought: payload.automaticThought,
         emotionPre: payload.emotionPre,
         emotionPost: payload.emotionPost,
