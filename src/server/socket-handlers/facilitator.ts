@@ -84,6 +84,11 @@ async function handleCreateSession(
 ): Promise<void> {
   // TODO: Validate facilitator permissions
   // For now, assume socket has userId in handshake.auth or similar
+
+  const userId = socket.data.userId;
+  if (!userId) {
+    throw new Error('Unauthorized: No user ID found');
+  }
   
   const roomCode = generateRoomCode();
   const purgeAfter = new Date();
@@ -92,7 +97,7 @@ async function handleCreateSession(
   const session = await prisma.session.create({
     data: {
       careTeamId: payload.careTeamId,
-      facilitatorId: 'temp-facilitator-id', // TODO: Get from auth
+      facilitatorId: userId,
       moduleId: payload.moduleId,
       promptPackId: payload.promptPackId,
       roomCode,
@@ -187,8 +192,10 @@ async function handleNextPrompt(
     },
   });
 
-  await broadcastSessionState(io, updatedSession.id);
-  await broadcastCurrentPrompt(io, updatedSession.id, payload.promptId);
+  await Promise.all([
+    broadcastSessionState(io, updatedSession.id),
+    broadcastCurrentPrompt(io, updatedSession.id, payload.promptId),
+  ]);
 }
 
 async function handleSpotlightResponse(
@@ -248,10 +255,10 @@ async function handleEndSession(
   if (!session) throw new Error('Session not found');
 
   // Generate session summary
-  const module = getModule(session.moduleId);
-  if (!module) throw new Error(`Module ${session.moduleId} not found`);
+  const sessionModule = getModule(session.moduleId);
+  if (!sessionModule) throw new Error(`Module ${session.moduleId} not found`);
 
-  const summaryData = await module.generateSummary(
+  const summaryData = await sessionModule.generateSummary(
     session,
     session.responses,
     session.participants

@@ -82,19 +82,24 @@ async function handleTVJoin(
     payload: {
       sessionId: session.id,
       role: 'tv',
+      moduleId: session.moduleId,
     },
   });
 
-  // Send current session state
-  await broadcastSessionState(io, session.id);
+  // Send current session state, prompt, and spotlighted responses in parallel
+  const broadcastPromises = [
+    broadcastSessionState(io, session.id),
+    broadcastSpotlightedResponses(io, session.id),
+  ];
 
   // Send current prompt if exists
   if (session.currentPromptId) {
-    await broadcastCurrentPrompt(io, session.id, session.currentPromptId);
+    broadcastPromises.push(
+      broadcastCurrentPrompt(io, session.id, session.currentPromptId)
+    );
   }
 
-  // Send current spotlighted responses
-  await broadcastSpotlightedResponses(io, session.id);
+  await Promise.all(broadcastPromises);
 
   // For Thought Reframe Relay, send module state
   if (session.moduleId === 'thought_reframe_relay') {

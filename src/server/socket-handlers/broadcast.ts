@@ -58,17 +58,16 @@ export async function broadcastCurrentPrompt(
   sessionId: string,
   promptId: string
 ): Promise<void> {
-  const prompt = await prisma.prompt.findUnique({
-    where: { id: promptId },
-  });
+  const [prompt, session] = await Promise.all([
+    prisma.prompt.findUnique({
+      where: { id: promptId },
+    }),
+    prisma.session.findUnique({
+      where: { id: sessionId },
+    }),
+  ]);
 
-  if (!prompt) return;
-
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-  });
-
-  if (!session) return;
+  if (!prompt || !session) return;
 
   const payload: CurrentPromptPayload = {
     promptId: prompt.id,
