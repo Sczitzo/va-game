@@ -136,7 +136,7 @@ export default function FacilitatorSessionPage() {
     );
   }
 
-  const module = getModule(sessionData.moduleId);
+  const gameModule = getModule(sessionData.moduleId);
   const isActive = sessionState?.status === 'IN_PROGRESS' || sessionState?.status === 'INTRO';
 
   return (
@@ -162,7 +162,7 @@ export default function FacilitatorSessionPage() {
       <div className={`min-h-screen ${isActive ? 'jackbox-gradient-bg' : 'bg-gray-50'} p-6`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Game Instructions - visible to all */}
-          {module && (
+          {gameModule && (
             <GameInstructions moduleId={sessionData.moduleId} />
           )}
 

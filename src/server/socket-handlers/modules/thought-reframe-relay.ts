@@ -128,15 +128,19 @@ export async function handleModuleAction(
 
     case 'redFlagPrompt':
       // Clear current responses and advance
-      await prisma.response.deleteMany({
-        where: {
-          sessionId,
-          promptId: (await prisma.session.findUnique({
-            where: { id: sessionId },
-            select: { currentPromptId: true },
-          }))?.currentPromptId,
-        },
+      const session = await prisma.session.findUnique({
+        where: { id: sessionId },
+        select: { currentPromptId: true },
       });
+
+      if (session?.currentPromptId) {
+        await prisma.response.deleteMany({
+          where: {
+            sessionId,
+            promptId: session.currentPromptId,
+          },
+        });
+      }
 
       await setModuleState(sessionId, 'PROMPT_READING');
       broadcastModuleState(io, sessionId, 'PROMPT_READING');

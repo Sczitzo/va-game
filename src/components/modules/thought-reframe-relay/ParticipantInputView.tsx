@@ -122,7 +122,7 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
             onClick={handlePass}
             className="w-full px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 focus-visible-ring"
           >
-            ⏭️ Pass – that's okay
+            ⏭️ Pass – that&apos;s okay
           </button>
           <p className="text-sm text-center text-gray-500">
             Participation is always voluntary

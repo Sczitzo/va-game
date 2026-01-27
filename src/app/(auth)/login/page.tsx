@@ -108,7 +108,7 @@ export default function LoginPage() {
 
           <div className="mt-6 pt-6 border-t border-gray-200 text-center space-y-3">
             <Link href="/register" className="block text-sm font-semibold text-jackbox-purple hover:text-jackbox-blue transition-colors">
-              ✨ Don't have an account? Register here
+              ✨ Don&apos;t have an account? Register here
             </Link>
             <Link href="/" className="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
               ← Back to home

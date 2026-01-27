@@ -87,6 +87,9 @@ interface ThoughtReframeRelayStore {
   hideResponse: (responseId: string) => void;
   saveForFollowup: (responseId: string) => void;
   
+  // Helper to refresh spotlighted list (internal)
+  refreshSpotlightedList: () => void;
+
   // Actions - Facilitator Controls (Facilitator only)
   openForResponses: () => void;
   closeInput: () => void;
@@ -108,18 +111,18 @@ interface ThoughtReframeRelayStore {
   reset: () => void;
 }
 
-const initialState: Omit<ThoughtReframeRelayStore, 'subscribeToSocketEvents' | 'unsubscribeFromSocketEvents'> = {
-  moduleState: 'LOBBY',
-  sessionId: null,
-  role: null,
-  currentPrompt: null,
-  allResponses: [],
-  spotlightedResponses: [],
+const initialState = {
+  moduleState: 'LOBBY' as ThoughtReframeRelayState,
+  sessionId: null as string | null,
+  role: null as Role | null,
+  currentPrompt: null as ThoughtReframeRelayStore['currentPrompt'],
+  allResponses: [] as ThoughtReframeResponse[],
+  spotlightedResponses: [] as ThoughtReframeRelayStore['spotlightedResponses'],
   anonymousResponseCount: 0,
   draftReframe: '',
   hasSubmitted: false,
   maxSpotlighted: 3,
-  socket: null,
+  socket: null as Socket | null,
   isConnected: false,
 };
 
