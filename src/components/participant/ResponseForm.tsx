@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SubmitResponsePayload } from '@/types/websocket';
 
@@ -17,6 +17,12 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [emotionPost, setEmotionPost] = useState<number | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
+  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+
+  // Reset skip confirmation when user types
+  useEffect(() => {
+    setShowSkipConfirm(false);
+  }, [alternativeThought, automaticThought, emotionPre, emotionPost]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +56,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   };
 
   const handleSkip = () => {
+    const hasContent =
+      alternativeThought.trim() ||
+      automaticThought.trim() ||
+      emotionPre !== undefined ||
+      emotionPost !== undefined;
+
+    if (hasContent && !showSkipConfirm) {
+      setShowSkipConfirm(true);
+      return;
+    }
+
     socket.emit('participant', {
       type: 'skip',
       sessionId,
@@ -155,9 +172,16 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             <button
               type="button"
               onClick={handleSkip}
-              className="jackbox-button-secondary focus-visible-ring"
+              className={
+                showSkipConfirm
+                  ? 'jackbox-button bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white focus-visible-ring transition-colors duration-200'
+                  : 'jackbox-button-secondary focus-visible-ring transition-colors duration-200'
+              }
+              aria-label={showSkipConfirm ? 'Confirm skip?' : 'Skip this prompt'}
+              aria-live="polite"
             >
-              <span aria-hidden="true">⏭️</span> Skip
+              <span aria-hidden="true">{showSkipConfirm ? '⚠️' : '⏭️'}</span>
+              {showSkipConfirm ? ' Confirm Skip?' : ' Skip'}
             </button>
           </div>
     </form>
