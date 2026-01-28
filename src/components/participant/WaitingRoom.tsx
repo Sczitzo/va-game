@@ -19,11 +19,22 @@ interface WaitingRoomProps {
  */
 export function WaitingRoom({ participants, roomCode, currentParticipantId }: WaitingRoomProps) {
   const [animateIn, setAnimateIn] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     // Trigger animation after mount
     setAnimateIn(true);
   }, []);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy room code:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 jackbox-gradient-bg">
@@ -35,8 +46,17 @@ export function WaitingRoom({ participants, roomCode, currentParticipantId }: Wa
             Waiting Room
           </h1>
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="jackbox-badge-purple text-lg px-4 py-2">
-              Room Code: <span className="font-mono font-bold">{roomCode}</span>
+            <div className="jackbox-badge-purple text-lg px-4 py-2 flex items-center gap-3">
+              <span>Room Code: <span className="font-mono font-bold">{roomCode}</span></span>
+              <button
+                onClick={handleCopy}
+                className="hover:bg-jackbox-purple/20 p-1.5 rounded transition-colors focus-visible-ring"
+                aria-label={isCopied ? "Room code copied" : "Copy room code"}
+                title="Copy room code"
+                type="button"
+              >
+                {isCopied ? '✅' : '📋'}
+              </button>
             </div>
           </div>
           <p className="text-xl text-gray-700 font-medium">
