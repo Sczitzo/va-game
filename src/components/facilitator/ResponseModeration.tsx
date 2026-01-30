@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Socket } from 'socket.io-client';
 
 interface ResponseModerationProps {
@@ -22,7 +23,10 @@ interface ResponseModerationProps {
 }
 
 export function ResponseModeration({ sessionId, responses, socket }: ResponseModerationProps) {
+  const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+
   const handleSpotlight = (responseId: string) => {
+    setActionInProgress(`${responseId}-spotlight`);
     socket.emit('facilitator', {
       type: 'spotlightResponse',
       payload: { sessionId, responseId },
@@ -30,6 +34,7 @@ export function ResponseModeration({ sessionId, responses, socket }: ResponseMod
   };
 
   const handleHide = (responseId: string) => {
+    setActionInProgress(`${responseId}-hide`);
     socket.emit('facilitator', {
       type: 'hideResponse',
       payload: { sessionId, responseId },
@@ -37,6 +42,7 @@ export function ResponseModeration({ sessionId, responses, socket }: ResponseMod
   };
 
   const handleSaveForFollowup = (responseId: string) => {
+    setActionInProgress(`${responseId}-save`);
     socket.emit('facilitator', {
       type: 'saveForFollowup',
       payload: { sessionId, responseId },
@@ -102,29 +108,65 @@ export function ResponseModeration({ sessionId, responses, socket }: ResponseMod
                 </div>
               )}
 
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3 flex-wrap">
                 {!response.isSpotlighted && (
                   <button
                     onClick={() => handleSpotlight(response.id)}
-                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus-visible-ring"
+                    disabled={actionInProgress === `${response.id}-spotlight`}
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    aria-label={`Spotlight response from ${response.participantNickname}`}
                   >
-                    Spotlight
+                    {actionInProgress === `${response.id}-spotlight` ? (
+                      <>
+                        <span className="animate-spin">⏳</span>
+                        <span>Spotlighting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span aria-hidden="true">⭐</span>
+                        <span>Spotlight</span>
+                      </>
+                    )}
                   </button>
                 )}
                 {!response.isHidden && (
                   <button
                     onClick={() => handleHide(response.id)}
-                    className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus-visible-ring"
+                    disabled={actionInProgress === `${response.id}-hide`}
+                    className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    aria-label={`Hide response from ${response.participantNickname}`}
                   >
-                    Hide
+                    {actionInProgress === `${response.id}-hide` ? (
+                      <>
+                        <span className="animate-spin">⏳</span>
+                        <span>Hiding...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span aria-hidden="true">🚫</span>
+                        <span>Hide</span>
+                      </>
+                    )}
                   </button>
                 )}
                 {!response.isSavedForFollowup && (
                   <button
                     onClick={() => handleSaveForFollowup(response.id)}
-                    className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 focus-visible-ring"
+                    disabled={actionInProgress === `${response.id}-save`}
+                    className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    aria-label={`Save response from ${response.participantNickname} for follow-up`}
                   >
-                    Save for Follow-up
+                    {actionInProgress === `${response.id}-save` ? (
+                      <>
+                        <span className="animate-spin">⏳</span>
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span aria-hidden="true">📌</span>
+                        <span>Save</span>
+                      </>
+                    )}
                   </button>
                 )}
               </div>
