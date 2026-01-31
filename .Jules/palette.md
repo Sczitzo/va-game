@@ -7,3 +7,7 @@
 ## 2026-01-28 - Smart Skip Safety
 **Learning:** Implementing a "soft" confirmation for destructive actions (like Skip) that resets on user interaction creates a safer yet non-intrusive experience.
 **Action:** Use state-based button transformations for minor destructive actions instead of blocking modals.
+
+## 2026-02-05 - Character Count Feedback
+**Learning:** Textareas without visible limits create uncertainty. Dynamic color-coded counters help users budget their input length and avoid frustration.
+**Action:** Pair `maxLength` with a visible counter linked via `aria-describedby` that warns users (e.g., orange/red) as they approach the limit.
