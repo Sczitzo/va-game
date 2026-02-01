@@ -128,6 +128,8 @@ export interface SessionStatePayload {
     id: string;
     url: string;
     type: MediaType;
+    name: string;
+    description: string | null;
   };
 }
 
