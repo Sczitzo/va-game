@@ -40,6 +40,8 @@ export async function broadcastSessionState(
           id: session.introMedia.id,
           url: session.introMedia.url,
           type: session.introMedia.type,
+          name: session.introMedia.name,
+          description: session.introMedia.description,
         }
       : undefined,
   };
