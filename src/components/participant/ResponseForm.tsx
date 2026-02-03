@@ -101,12 +101,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
               rows={4}
+              maxLength={1000}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
+              aria-describedby="alternativeThought-count"
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {alternativeThought.length} characters
+            <div id="alternativeThought-count" className="text-right text-xs text-gray-500 mt-1">
+              {alternativeThought.length}/1000 characters
             </div>
           </div>
 
