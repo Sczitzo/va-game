@@ -10,6 +10,8 @@ interface ResponseFormProps {
   socket: Socket;
 }
 
+const MAX_CHARS = 500;
+
 export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps) {
   const [alternativeThought, setAlternativeThought] = useState('');
   const [automaticThought, setAutomaticThought] = useState('');
@@ -101,12 +103,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
               rows={4}
+              maxLength={MAX_CHARS}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
+              aria-describedby="alternative-thought-counter"
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {alternativeThought.length} characters
+            <div id="alternative-thought-counter" className={`text-right text-xs mt-1 ${alternativeThought.length > 450 ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
+              {alternativeThought.length} / {MAX_CHARS} characters
             </div>
           </div>
 
@@ -119,9 +123,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               value={automaticThought}
               onChange={(e) => setAutomaticThought(e.target.value)}
               rows={3}
+              maxLength={MAX_CHARS}
               className="jackbox-input"
               placeholder="What was your initial automatic thought?"
+              aria-describedby="automatic-thought-counter"
             />
+            <div id="automatic-thought-counter" className={`text-right text-xs mt-1 ${automaticThought.length > 450 ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
+              {automaticThought.length} / {MAX_CHARS} characters
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
