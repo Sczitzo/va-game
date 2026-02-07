@@ -7,3 +7,7 @@
 ## 2026-01-28 - Smart Skip Safety
 **Learning:** Implementing a "soft" confirmation for destructive actions (like Skip) that resets on user interaction creates a safer yet non-intrusive experience.
 **Action:** Use state-based button transformations for minor destructive actions instead of blocking modals.
+
+## 2026-02-07 - Accessible Character Limits
+**Learning:** Screen readers need explicit linking between inputs and their dynamic character counters, but `aria-live` on the counter itself is too verbose.
+**Action:** Use `maxLength` on the input + `aria-describedby` pointing to the counter ID. Do NOT use `aria-live` on the counter.
