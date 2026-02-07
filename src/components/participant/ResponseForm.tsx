@@ -10,6 +10,8 @@ interface ResponseFormProps {
   socket: Socket;
 }
 
+const MAX_CHARS = 280;
+
 export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps) {
   const [alternativeThought, setAlternativeThought] = useState('');
   const [automaticThought, setAutomaticThought] = useState('');
@@ -101,12 +103,21 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
               rows={4}
+              maxLength={MAX_CHARS}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
+              aria-describedby="alternativeThought-counter"
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {alternativeThought.length} characters
+            <div
+              id="alternativeThought-counter"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${
+                alternativeThought.length > MAX_CHARS * 0.9
+                  ? 'text-red-600 font-medium'
+                  : 'text-gray-500'
+              }`}
+            >
+              {alternativeThought.length} / {MAX_CHARS} characters
             </div>
           </div>
 
