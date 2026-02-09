@@ -19,6 +19,9 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
+  const MAX_CHARS = 500;
+  const remainingChars = MAX_CHARS - alternativeThought.length;
+
   // Reset skip confirmation when user types
   useEffect(() => {
     setShowSkipConfirm(false);
@@ -104,9 +107,16 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
+              maxLength={MAX_CHARS}
+              aria-describedby="alternativeThought-counter"
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {alternativeThought.length} characters
+            <div
+              id="alternativeThought-counter"
+              className={`text-right text-xs mt-1 transition-colors ${
+                remainingChars < 50 ? 'text-red-600 font-medium' : 'text-gray-500'
+              }`}
+            >
+              {alternativeThought.length} / {MAX_CHARS} characters
             </div>
           </div>
 
