@@ -7,3 +7,7 @@
 ## 2026-01-28 - Smart Skip Safety
 **Learning:** Implementing a "soft" confirmation for destructive actions (like Skip) that resets on user interaction creates a safer yet non-intrusive experience.
 **Action:** Use state-based button transformations for minor destructive actions instead of blocking modals.
+
+## 2026-05-21 - Accessible Character Limits
+**Learning:** Standard HTML `maxlength` alone provides no feedback to screen reader users about remaining capacity.
+**Action:** Always pair `maxLength` with a visible, dynamically updating counter linked via `aria-describedby` to the input field.
