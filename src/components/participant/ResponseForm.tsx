@@ -93,26 +93,31 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
 
           <div>
             <label htmlFor="alternativeThought" className="block text-sm font-semibold mb-2 text-gray-900">
-              Alternative Thought <span className="text-red-500">*</span>
+              Alternative Thought <span className="text-red-600">*</span>
             </label>
             <textarea
               id="alternativeThought"
               value={alternativeThought}
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
+              maxLength={300}
               rows={4}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
               aria-required="true"
+              aria-describedby="alternativeThought-counter"
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {alternativeThought.length} characters
+            <div
+              id="alternativeThought-counter"
+              className="text-right text-xs text-gray-500 mt-1"
+            >
+              {alternativeThought.length} / 300 characters
             </div>
           </div>
 
           <div>
             <label htmlFor="automaticThought" className="block text-sm font-semibold mb-2 text-gray-900">
-              Automatic Thought <span className="text-xs text-gray-600">(Optional)</span>
+              Automatic Thought <span id="automaticThought-desc" className="text-xs text-gray-600">(Optional)</span>
             </label>
             <textarea
               id="automaticThought"
@@ -121,6 +126,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               rows={3}
               className="jackbox-input"
               placeholder="What was your initial automatic thought?"
+              aria-describedby="automaticThought-desc"
             />
           </div>
 
