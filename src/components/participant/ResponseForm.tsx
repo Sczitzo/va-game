@@ -16,6 +16,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [emotionPre, setEmotionPre] = useState<number | undefined>();
   const [emotionPost, setEmotionPost] = useState<number | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
@@ -53,6 +54,8 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     setEmotionPre(undefined);
     setEmotionPost(undefined);
     setIsSubmitting(false);
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 2000);
   };
 
   const handleSkip = () => {
@@ -109,7 +112,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${
+                alternativeThought.length >= 300
+                  ? 'text-red-600 font-medium'
+                  : alternativeThought.length >= 250
+                    ? 'text-orange-600'
+                    : 'text-gray-500'
+              }`}
+              aria-live={alternativeThought.length >= 250 ? "polite" : "off"}
             >
               {alternativeThought.length} / 300 characters
             </div>
@@ -165,11 +175,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              disabled={isSubmitting || !alternativeThought.trim()}
-              className="flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
+              className={`flex-1 jackbox-button-primary focus-visible-ring transition-all duration-300 ${
+                isSuccess
+                  ? '!from-green-500 !to-green-600 !opacity-100'
+                  : 'disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
             >
               {isSubmitting ? (
                 <><span aria-hidden="true">⏳</span> Submitting...</>
+              ) : isSuccess ? (
+                <><span aria-hidden="true">✅</span> Sent!</>
               ) : (
                 <><span aria-hidden="true">🚀</span> Submit</>
               )}
