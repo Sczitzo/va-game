@@ -19,6 +19,19 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
+  const MAX_LENGTH = 300;
+  const currentLength = alternativeThought.length;
+  const usagePercentage = (currentLength / MAX_LENGTH) * 100;
+
+  let counterClassName = 'text-right text-xs mt-1 transition-colors duration-200 ';
+  if (usagePercentage > 90) {
+    counterClassName += 'text-red-600 font-bold';
+  } else if (usagePercentage > 80) {
+    counterClassName += 'text-orange-700 font-medium';
+  } else {
+    counterClassName += 'text-gray-500';
+  }
+
   // Reset skip confirmation when user types
   useEffect(() => {
     setShowSkipConfirm(false);
@@ -100,7 +113,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               value={alternativeThought}
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
-              maxLength={300}
+              maxLength={MAX_LENGTH}
               rows={4}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
@@ -109,9 +122,10 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={counterClassName}
+              aria-live={usagePercentage > 80 ? 'polite' : 'off'}
             >
-              {alternativeThought.length} / 300 characters
+              {currentLength} / {MAX_LENGTH} characters
             </div>
           </div>
 
