@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-02-20 - Dynamic Character Feedback
+**Learning:** Constant `aria-live` updates on character counters spam screen readers on every keystroke.
+**Action:** Only activate `aria-live="polite"` when approaching the limit (>80%) to balance feedback with usability.
