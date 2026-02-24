@@ -24,6 +24,13 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     setShowSkipConfirm(false);
   }, [alternativeThought, automaticThought, emotionPre, emotionPost]);
 
+  const getCharacterCountStyles = (current: number, max: number) => {
+    const percentage = (current / max) * 100;
+    if (percentage > 90) return 'text-red-600 font-bold';
+    if (percentage > 80) return 'text-orange-700 font-medium';
+    return 'text-gray-500';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -109,7 +116,8 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${getCharacterCountStyles(alternativeThought.length, 300)}`}
+              aria-live={alternativeThought.length > 240 ? "polite" : undefined}
             >
               {alternativeThought.length} / 300 characters
             </div>
