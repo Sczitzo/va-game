@@ -109,7 +109,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${
+                alternativeThought.length / 300 > 0.9
+                  ? 'text-red-600 font-bold'
+                  : alternativeThought.length / 300 > 0.8
+                  ? 'text-orange-700 font-medium'
+                  : 'text-gray-500'
+              }`}
+              aria-live={alternativeThought.length / 300 > 0.8 ? 'polite' : undefined}
             >
               {alternativeThought.length} / 300 characters
             </div>
