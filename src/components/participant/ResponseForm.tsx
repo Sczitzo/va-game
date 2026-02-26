@@ -85,6 +85,20 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     );
   }
 
+  const maxLength = 300;
+  const currentLength = alternativeThought.length;
+  const percentage = (currentLength / maxLength) * 100;
+  let counterColorClass = 'text-gray-500';
+  let ariaLiveValue: 'polite' | undefined;
+
+  if (percentage > 90) {
+    counterColorClass = 'text-red-600 font-bold';
+    ariaLiveValue = 'polite';
+  } else if (percentage > 80) {
+    counterColorClass = 'text-orange-700 font-medium';
+    ariaLiveValue = 'polite';
+  }
+
   return (
     <form onSubmit={handleSubmit} className="jackbox-card space-y-5">
       <h2 className="text-xl font-bold mb-4 text-jackbox-purple">
@@ -100,7 +114,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               value={alternativeThought}
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
-              maxLength={300}
+              maxLength={maxLength}
               rows={4}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
@@ -109,9 +123,10 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${counterColorClass}`}
+              aria-live={ariaLiveValue}
             >
-              {alternativeThought.length} / 300 characters
+              {currentLength} / {maxLength} characters
             </div>
           </div>
 
