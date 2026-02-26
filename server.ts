@@ -47,4 +47,3 @@ app.prepare().then(() => {
     console.log(`> Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 });
-
