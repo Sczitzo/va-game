@@ -19,6 +19,18 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
+  // Progressive character count logic
+  const MAX_CHARS = 300;
+  const charCount = alternativeThought.length;
+  const usagePercentage = (charCount / MAX_CHARS) * 100;
+
+  let counterClass = "text-gray-500";
+  if (usagePercentage > 90) {
+    counterClass = "text-red-600 font-bold";
+  } else if (usagePercentage > 80) {
+    counterClass = "text-orange-700 font-medium";
+  }
+
   // Reset skip confirmation when user types
   useEffect(() => {
     setShowSkipConfirm(false);
@@ -109,9 +121,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${counterClass}`}
             >
-              {alternativeThought.length} / 300 characters
+              {charCount} / {MAX_CHARS} characters
+              {usagePercentage > 80 && (
+                <span className="sr-only" role="status">
+                  {usagePercentage > 90 ? 'Critical character limit warning.' : 'Approaching character limit.'}
+                </span>
+              )}
             </div>
           </div>
 
