@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,15 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [isConfirmingEnd, setIsConfirmingEnd] = useState(false);
+
+  useEffect(() => {
+    if (isConfirmingEnd) {
+      const timer = setTimeout(() => setIsConfirmingEnd(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isConfirmingEnd]);
+
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,11 +35,14 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
+    if (isConfirmingEnd) {
       socket.emit('facilitator', {
         type: 'endSession',
         payload: { sessionId },
       });
+      setIsConfirmingEnd(false);
+    } else {
+      setIsConfirmingEnd(true);
     }
   };
 
@@ -86,9 +99,15 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         {sessionState.status !== 'ENDED' && (
           <button
             onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
+            className={`w-full px-4 py-2 text-white rounded-lg focus-visible-ring transition-colors duration-200 ${
+              isConfirmingEnd
+                ? 'bg-red-700 hover:bg-red-800 ring-2 ring-red-500 ring-offset-2'
+                : 'bg-red-600 hover:bg-red-700'
+            }`}
+            aria-label={isConfirmingEnd ? "Confirm end session" : "End session"}
+            aria-live="polite"
           >
-            End Session
+            {isConfirmingEnd ? '⚠️ Click again to confirm' : 'End Session'}
           </button>
         )}
       </div>
