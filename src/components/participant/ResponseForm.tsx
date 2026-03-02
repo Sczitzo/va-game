@@ -109,9 +109,23 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 ${
+                alternativeThought.length > 270
+                  ? 'text-red-600 font-bold'
+                  : alternativeThought.length > 240
+                  ? 'text-orange-700 font-medium'
+                  : 'text-gray-500'
+              }`}
             >
               {alternativeThought.length} / 300 characters
+            </div>
+            {/* Screen reader only status for character limit warning */}
+            <div className="sr-only" role="status" aria-live="polite">
+              {alternativeThought.length > 270
+                ? 'Approaching limit, less than 30 characters remaining.'
+                : alternativeThought.length > 240
+                ? 'Approaching limit, less than 60 characters remaining.'
+                : ''}
             </div>
           </div>
 

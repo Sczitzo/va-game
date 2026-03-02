@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-03-22 - Screen Reader Only Text Needs Utility Class
+**Learning:** Adding an `sr-only` class to elements for screen readers requires the corresponding utility to be defined in CSS or configured in Tailwind. Without it, the text might visually bleed into the UI.
+**Action:** Always ensure the `.sr-only` utility is globally available (e.g., via `@tailwind utilities` or explicit CSS definition) when using it for accessible status messages.
