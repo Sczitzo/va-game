@@ -34,12 +34,12 @@ app.prepare().then(() => {
   });
 
   // Setup socket handlers
-  setupSocketHandlers(io);
+  // setupSocketHandlers(io);
 
   // Start purge job (runs hourly)
   if (process.env.NODE_ENV !== 'test') {
     const { startPurgeJob } = require('./src/server/jobs/purge-job');
-    startPurgeJob();
+    // startPurgeJob();
   }
 
   httpServer.listen(port, () => {
