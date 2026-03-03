@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-02-19 - Progressive Character Limit Pattern
+**Learning:** Relying on `aria-live` for every character update on limited inputs creates excessive screen reader noise, overwhelming users.
+**Action:** Use a dynamic visual counter for sighted users, but rely on an `sr-only` element with `role="status"` that only renders when crossing specific thresholds (e.g., "Approaching limit" at 80%, "Limit reached" at 100%) to provide critical, non-noisy feedback.
