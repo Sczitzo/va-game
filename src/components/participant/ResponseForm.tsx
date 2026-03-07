@@ -16,6 +16,9 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [emotionPre, setEmotionPre] = useState<number | undefined>();
   const [emotionPost, setEmotionPost] = useState<number | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const maxLength = 300;
+  const lengthPercentage = alternativeThought.length / maxLength;
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
@@ -47,12 +50,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
       payload,
     });
 
-    // Reset form
+    // Immediately reset form inputs to prevent input wiping if the user starts typing again
     setAlternativeThought('');
     setAutomaticThought('');
     setEmotionPre(undefined);
     setEmotionPost(undefined);
     setIsSubmitting(false);
+
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+    }, 2000);
   };
 
   const handleSkip = () => {
@@ -100,7 +108,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               value={alternativeThought}
               onChange={(e) => setAlternativeThought(e.target.value)}
               required
-              maxLength={300}
+              maxLength={maxLength}
               rows={4}
               className="jackbox-input"
               placeholder="What's an alternative, balanced way to think about this?"
@@ -109,10 +117,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 ${
+                lengthPercentage >= 0.9 ? 'text-red-600 font-bold' : lengthPercentage >= 0.8 ? 'text-orange-700 font-medium' : 'text-gray-500'
+              }`}
             >
-              {alternativeThought.length} / 300 characters
+              {alternativeThought.length} / {maxLength} characters
             </div>
+            {lengthPercentage >= 0.8 && (
+              <div className="sr-only" role="status">
+                Approaching character limit
+              </div>
+            )}
           </div>
 
           <div>
@@ -165,10 +180,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              disabled={isSubmitting || !alternativeThought.trim()}
-              className="flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting || isSuccess || !alternativeThought.trim()}
+              className={`flex-1 jackbox-button-primary focus-visible-ring disabled:cursor-not-allowed ${
+                isSuccess
+                  ? '!bg-green-600 !opacity-100 !text-white !from-green-600 !to-green-500'
+                  : 'disabled:opacity-50'
+              }`}
+              aria-live="polite"
             >
-              {isSubmitting ? (
+              {isSuccess ? (
+                <><span aria-hidden="true">✅</span> Sent!</>
+              ) : isSubmitting ? (
                 <><span aria-hidden="true">⏳</span> Submitting...</>
               ) : (
                 <><span aria-hidden="true">🚀</span> Submit</>
