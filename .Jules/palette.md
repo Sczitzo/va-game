@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-03-05 - Progressive SR-Only Form Feedback
+**Learning:** For dynamic character counters in input forms, updating numeric text strings with `aria-live` regions creates noisy, constant interruption for screen readers. Instead, calculating threshold boundaries and revealing an `sr-only` `role="status"` element dynamically alerts screen reader users at critical milestones without continuous disruption.
+**Action:** When creating text limits or dynamic boundaries, ensure screen readers are notified at milestones via dedicated invisible `role="status"` nodes rather than putting `aria-live` on frequently changing text itself.
