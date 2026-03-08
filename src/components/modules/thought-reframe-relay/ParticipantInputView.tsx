@@ -101,10 +101,29 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
             value={draftReframe}
             onChange={(e) => setDraftReframe(e.target.value)}
             rows={6}
+            maxLength={300}
             className="jackbox-input text-base"
             placeholder="Share your balanced perspective..."
             aria-required="false"
+            aria-describedby="reframe-counter"
           />
+          <div
+            id="reframe-counter"
+            className={`text-right text-xs mt-1 ${
+              draftReframe.length >= 270
+                ? 'text-red-600 font-bold'
+                : draftReframe.length >= 240
+                ? 'text-orange-700 font-medium'
+                : 'text-gray-500'
+            }`}
+          >
+            {draftReframe.length} / 300 characters
+          </div>
+          {draftReframe.length >= 240 && (
+            <div className="sr-only" role="status">
+              Approaching limit
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
