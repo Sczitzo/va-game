@@ -167,7 +167,7 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="careTeamId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Care Team <span className="text-red-500">*</span>
+              Care Team <span className="text-red-600">*</span>
             </label>
             <select
               id="careTeamId"
@@ -210,7 +210,7 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="promptPackId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Prompt Pack <span className="text-red-500">*</span>
+              Prompt Pack <span className="text-red-600">*</span>
             </label>
             <select
               id="promptPackId"
@@ -234,7 +234,7 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="numRounds" className="block text-sm font-semibold mb-2 text-gray-900">
-              Number of Rounds <span className="text-red-500">*</span>
+              Number of Rounds <span className="text-red-600">*</span>
             </label>
             <input
               id="numRounds"
@@ -250,7 +250,7 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="introMediaId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Intro Media <span className="text-red-500">*</span>
+              Intro Media <span className="text-red-600">*</span>
             </label>
             <select
               id="introMediaId"
