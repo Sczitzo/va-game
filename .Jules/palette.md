@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-02-12 - Replacing native window.confirm
+**Learning:** Using native `window.confirm` for destructive actions like ending a session blocks the main thread, feels jarring, and provides poor accessibility and UX.
+**Action:** Replace `window.confirm` with a state-based "soft confirmation" two-click button pattern, ensuring it uses `aria-live="polite"` and clear, bold styling changes to signal the state change to users.
