@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-03-23 - Screen Reader Friendly Character Counters
+**Learning:** Attaching `aria-live="polite"` to a constantly updating character counter causes frustrating, non-stop announcements for screen reader users as they type.
+**Action:** Remove `aria-live` from the counter. Instead, render a separate, visually-hidden `role="status"` element containing a static warning (e.g., "Approaching limit") only when the user crosses a certain threshold (e.g., 80% capacity).
