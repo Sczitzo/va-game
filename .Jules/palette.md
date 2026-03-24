@@ -11,3 +11,7 @@
 ## 2026-02-11 - Contrast for Required Fields
 **Learning:** The project's standard `text-red-500` for required asterisks fails WCAG AA contrast (3.7:1) on white backgrounds.
 **Action:** Use `text-red-600` (5.7:1) or darker for all critical red text on light backgrounds.
+
+## 2026-03-05 - Native Confirmations
+**Learning:** Using native `window.confirm` for destructive actions can be disruptive and lacks context within the application's UI.
+**Action:** Replace `window.confirm` with state-based "soft confirmations" that blend with the application's design language, such as transforming the action button itself, to provide a safer yet non-intrusive experience.

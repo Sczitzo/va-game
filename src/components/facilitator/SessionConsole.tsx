@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,18 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (showEndConfirm) {
+      timeout = setTimeout(() => {
+        setShowEndConfirm(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [showEndConfirm]);
+
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,12 +38,16 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
+    if (!showEndConfirm) {
+      setShowEndConfirm(true);
+      return;
     }
+
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
+    setShowEndConfirm(false);
   };
 
   if (!sessionState) {
@@ -86,9 +103,16 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         {sessionState.status !== 'ENDED' && (
           <button
             onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
+            className={
+              showEndConfirm
+                ? 'w-full px-4 py-2 bg-red-50 border-2 border-red-500 text-red-600 font-bold hover:bg-red-500 hover:text-white rounded-lg focus-visible-ring transition-colors duration-200'
+                : 'w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring transition-colors duration-200'
+            }
+            aria-label={showEndConfirm ? 'Confirm end session?' : 'End Session'}
+            aria-live="polite"
           >
-            End Session
+            <span aria-hidden="true">{showEndConfirm ? '⚠️' : ''}</span>
+            {showEndConfirm ? ' Confirm End Session?' : ' End Session'}
           </button>
         )}
       </div>
