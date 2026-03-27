@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SubmitResponsePayload } from '@/types/websocket';
 
@@ -18,11 +18,22 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const successTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Reset skip confirmation when user types
   useEffect(() => {
     setShowSkipConfirm(false);
   }, [alternativeThought, automaticThought, emotionPre, emotionPost]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +64,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     setEmotionPre(undefined);
     setEmotionPost(undefined);
     setIsSubmitting(false);
+
+    setIsSuccess(true);
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current);
+    }
+    successTimeoutRef.current = setTimeout(() => {
+      setIsSuccess(false);
+    }, 2000);
   };
 
   const handleSkip = () => {
@@ -165,10 +184,14 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              disabled={isSubmitting || !alternativeThought.trim()}
-              className="flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
+              className={`flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed ${
+                isSuccess ? '!opacity-100 !bg-none !bg-green-600 !text-white' : ''
+              }`}
             >
-              {isSubmitting ? (
+              {isSuccess ? (
+                <><span aria-hidden="true">✅</span> Sent!</>
+              ) : isSubmitting ? (
                 <><span aria-hidden="true">⏳</span> Submitting...</>
               ) : (
                 <><span aria-hidden="true">🚀</span> Submit</>
