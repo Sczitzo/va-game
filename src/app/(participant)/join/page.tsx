@@ -47,7 +47,7 @@ export default function JoinPage() {
 
           <div>
             <label htmlFor="roomCode" className="block text-sm font-semibold mb-2 text-gray-900">
-              Room Code <span className="text-red-500">*</span>
+              Room Code <span className="text-red-600">*</span>
             </label>
             <input
               id="roomCode"
@@ -65,7 +65,7 @@ export default function JoinPage() {
 
           <div>
             <label htmlFor="nickname" className="block text-sm font-semibold mb-2 text-gray-900">
-              Nickname <span className="text-red-500">*</span>
+              Nickname <span className="text-red-600">*</span>
             </label>
             <input
               id="nickname"
