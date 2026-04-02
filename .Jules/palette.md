@@ -15,3 +15,4 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+## 2026-04-02 - Prevent Double Announcements in Labels\n**Learning:** When supplementary text (like '(0-10)') is inside a `<label>` tag, screen readers automatically read it as part of the input's name. Adding `aria-describedby` linking to that same text causes the screen reader to announce it redundantly.\n**Action:** Only use `aria-describedby` for descriptive text that lives *outside* of the input's associated `<label>`.
