@@ -1,0 +1,57 @@
+
+> va-group-psychoeducation@0.1.0 dev /app
+> tsx watch server.ts
+
+Starting purge job (runs hourly)
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at <anonymous> (/app/server.ts:45:14) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at <anonymous> (/app/server.ts:45:14) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+prisma:error
+Invalid `prisma.session.deleteMany()` invocation in
+/app/src/server/jobs/purge-job.ts:18:66
+
+  15 // - Responses
+  16 // - SessionSummary
+  17 // - AuditLogs (setNull on sessionId)
+→ 18 const { count: deletedSessionsCount } = await prisma.session.deleteMany(
+Can't reach database server at `dummy:5432`
+
+Please make sure your database server is running at `dummy:5432`.
+Error in purge job: PrismaClientInitializationError:
+Invalid `prisma.session.deleteMany()` invocation in
+/app/src/server/jobs/purge-job.ts:18:66
+
+  15 // - Responses
+  16 // - SessionSummary
+  17 // - AuditLogs (setNull on sessionId)
+→ 18 const { count: deletedSessionsCount } = await prisma.session.deleteMany(
+Can't reach database server at `dummy:5432`
+
+Please make sure your database server is running at `dummy:5432`.
+    at $n.handleRequestError (/app/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615)
+    at $n.handleAndLogRequestError (/app/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/app/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/app/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async purgeExpiredSessions (/app/src/server/jobs/purge-job.ts:18:45) {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
