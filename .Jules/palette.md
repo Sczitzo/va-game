@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-10-24 - Screen Reader Noise in Live Regions
+**Learning:** Updating a visible text counter with a dynamic number inside an `aria-live` region spam-announces to screen readers on every keystroke. Using a separate, static screen-reader-only element that conditionally renders its text content (e.g., `{length >= 240 ? 'Approaching limit' : ''}`) triggers the announcement exactly once when the threshold is crossed, creating a much better, non-noisy experience.
+**Action:** Use conditionally rendered static text inside `role="status"` for threshold warnings instead of dynamic values.
