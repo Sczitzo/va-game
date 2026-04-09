@@ -104,6 +104,15 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     );
   }
 
+  const currentLength = alternativeThought.length;
+  const isWarning = currentLength >= 240 && currentLength < 270;
+  const isDanger = currentLength >= 270;
+  const isFull = currentLength >= 300;
+
+  let counterColorClass = "text-gray-500";
+  if (isDanger) counterColorClass = "text-red-600 font-bold";
+  else if (isWarning) counterColorClass = "text-orange-700 font-medium";
+
   return (
     <form onSubmit={handleSubmit} className="jackbox-card space-y-5">
       <h2 className="text-xl font-bold mb-4 text-jackbox-purple">
@@ -128,10 +137,20 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 ${counterColorClass}`}
+              aria-hidden="true"
             >
-              {alternativeThought.length} / 300 characters
+              {currentLength} / 300 characters
             </div>
+            {(isWarning || isDanger) && (
+              <div className="sr-only" role="status">
+                {isFull
+                  ? 'Character limit reached'
+                  : isDanger
+                    ? 'Dangerously close to character limit'
+                    : 'Approaching character limit'}
+              </div>
+            )}
           </div>
 
           <div>
