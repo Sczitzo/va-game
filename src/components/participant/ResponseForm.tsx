@@ -94,6 +94,18 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     setIsSkipped(true);
   };
 
+  const charLimit = 300;
+  const charCount = alternativeThought.length;
+  const isApproachingLimit = charCount >= charLimit * 0.8 && charCount < charLimit;
+  const isLimitReached = charCount >= charLimit;
+
+  let counterColor = "text-gray-500";
+  if (charCount >= charLimit * 0.9) {
+    counterColor = "text-red-600 font-bold";
+  } else if (charCount >= charLimit * 0.8) {
+    counterColor = "text-orange-700 font-medium";
+  }
+
   if (isSkipped) {
     return (
       <div className="jackbox-card text-center">
@@ -128,10 +140,20 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors ${counterColor}`}
             >
-              {alternativeThought.length} / 300 characters
+              {charCount} / {charLimit} characters
             </div>
+            {isApproachingLimit && (
+              <div role="status" className="sr-only">
+                Approaching character limit
+              </div>
+            )}
+            {isLimitReached && (
+              <div role="status" className="sr-only">
+                Character limit reached
+              </div>
+            )}
           </div>
 
           <div>
