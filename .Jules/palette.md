@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-05-30 - Dynamic Character Limit Announcement Patterns
+**Learning:** Screen reader announcements via `aria-live` on actively changing inputs (like a character count) create massive noise for visually impaired users. Additionally, linking the input to changing text using `aria-describedby` causes Next.js/React re-renders to repeatedly fire descriptions.
+**Action:** When implementing progressive character limit warnings, use strict thresholds to render static, visually-hidden elements with `role="status"` (e.g., "Approaching limit", "Limit reached"). Do not interpolate changing variables into these strings.
