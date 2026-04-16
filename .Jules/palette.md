@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-05-18 - Dynamic Character Counter ARIA Optimization
+**Learning:** When creating progressive character limit warnings (e.g., text changing from gray to orange to red), using a ternary operator to dynamically change the text inside a single persistent `div` can cause screen readers to incorrectly read the text on every keystroke if `aria-live` is applied. Even without `aria-live`, the changing visual state isn't explicitly announced when thresholds are crossed.
+**Action:** Instead of making the visible counter dynamic for screen readers, render it without special ARIA roles. Conditionally render a *completely separate, visually hidden* element (`<div role="status" className="sr-only">`) that contains a strictly static warning message (e.g., "Approaching limit" or "Character limit reached") only when the mathematical threshold is crossed. This ensures the screen reader announces the status exactly once when the condition is met, without noisy updates.
