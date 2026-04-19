@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-04-19 - Replacing window.confirm with Soft Confirmations
+**Learning:** Native `window.confirm` dialogs block the main thread and provide a disruptive, non-customizable experience. A 2-click "soft confirmation" using a short timeout (e.g., 3 seconds) with visual changes (red styling, bold text) is far more accessible and fluid.
+**Action:** Replace `window.confirm` usages for destructive actions with state-based inline buttons that require a second confirmation click within a timeout window.
