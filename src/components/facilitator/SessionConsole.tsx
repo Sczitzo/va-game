@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,16 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const confirmTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (confirmTimeoutRef.current) {
+        clearTimeout(confirmTimeoutRef.current);
+      }
+    };
+  }, []);
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,12 +36,18 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
+    if (!showEndConfirm) {
+      setShowEndConfirm(true);
+      if (confirmTimeoutRef.current) clearTimeout(confirmTimeoutRef.current);
+      confirmTimeoutRef.current = setTimeout(() => setShowEndConfirm(false), 3000);
+      return;
     }
+
+    if (confirmTimeoutRef.current) clearTimeout(confirmTimeoutRef.current);
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
   };
 
   if (!sessionState) {
@@ -84,12 +101,23 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div className="space-y-1">
+            <button
+              onClick={handleEndSession}
+              className={`w-full px-4 py-2 text-white rounded-lg focus-visible-ring transition-colors duration-200 ${
+                showEndConfirm ? 'bg-red-800 font-bold' : 'bg-red-600 hover:bg-red-700'
+              }`}
+              aria-live="polite"
+              aria-describedby={showEndConfirm ? 'end-session-desc' : undefined}
+            >
+              {showEndConfirm ? '⚠️ Confirm End Session' : 'End Session'}
+            </button>
+            {showEndConfirm && (
+              <p id="end-session-desc" className="text-sm text-red-600 text-center font-medium">
+                This will generate the session summary.
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
