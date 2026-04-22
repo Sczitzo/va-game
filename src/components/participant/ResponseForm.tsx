@@ -104,6 +104,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
     );
   }
 
+  const altThoughtLength = alternativeThought.length;
+  const isApproachingLimit = altThoughtLength >= 240 && altThoughtLength < 300;
+  const isAtLimit = altThoughtLength >= 300;
+
+  let counterClass = "text-right text-xs mt-1 text-gray-500";
+  if (isAtLimit) {
+    counterClass = "text-right text-xs mt-1 text-red-600 font-bold";
+  } else if (isApproachingLimit) {
+    counterClass = "text-right text-xs mt-1 text-orange-700 font-medium";
+  }
+
   return (
     <form onSubmit={handleSubmit} className="jackbox-card space-y-5">
       <h2 className="text-xl font-bold mb-4 text-jackbox-purple">
@@ -128,10 +139,17 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={counterClass}
+              aria-hidden="true"
             >
-              {alternativeThought.length} / 300 characters
+              {altThoughtLength} / 300 characters
             </div>
+            {isApproachingLimit && (
+              <div role="status" className="sr-only">Approaching character limit</div>
+            )}
+            {isAtLimit && (
+              <div role="status" className="sr-only">Character limit reached</div>
+            )}
           </div>
 
           <div>
