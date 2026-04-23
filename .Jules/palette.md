@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-04-23 - Context in Soft Confirmations
+**Learning:** When replacing a blocking native `confirm()` dialog with a soft state-based confirmation, it's crucial to retain any explanatory context (e.g., "This will generate the session summary"). Dropping this context during the transition to a modern UX pattern causes a slight regression in usability.
+**Action:** When implementing soft confirmation buttons, ensure that any critical warning or explanatory text from the original design is rendered near the confirmation button when it is in its active state.
