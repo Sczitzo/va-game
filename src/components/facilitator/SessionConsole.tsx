@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,17 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const endConfirmTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (endConfirmTimeoutRef.current) {
+        clearTimeout(endConfirmTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,11 +37,25 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
+    if (!showEndConfirm) {
+      setShowEndConfirm(true);
+      if (endConfirmTimeoutRef.current) {
+        clearTimeout(endConfirmTimeoutRef.current);
+      }
+      endConfirmTimeoutRef.current = setTimeout(() => {
+        setShowEndConfirm(false);
+      }, 3000);
+      return;
+    }
+
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
+
+    setShowEndConfirm(false);
+    if (endConfirmTimeoutRef.current) {
+      clearTimeout(endConfirmTimeoutRef.current);
     }
   };
 
@@ -86,9 +112,14 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         {sessionState.status !== 'ENDED' && (
           <button
             onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
+            className={`w-full px-4 py-2 text-white rounded-lg focus-visible-ring transition-colors ${
+              showEndConfirm
+                ? 'bg-red-700 font-bold ring-2 ring-red-900 ring-offset-2'
+                : 'bg-red-600 hover:bg-red-700'
+            }`}
+            aria-live="polite"
           >
-            End Session
+            {showEndConfirm ? '⚠️ Confirm End Session' : 'End Session'}
           </button>
         )}
       </div>
