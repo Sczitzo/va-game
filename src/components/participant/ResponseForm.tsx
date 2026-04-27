@@ -136,7 +136,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
 
           <div>
             <label htmlFor="automaticThought" className="block text-sm font-semibold mb-2 text-gray-900">
-              Automatic Thought <span id="automaticThought-desc" className="text-xs text-gray-600">(Optional)</span>
+              Automatic Thought <span className="text-xs text-gray-600">(Optional)</span>
             </label>
             <textarea
               id="automaticThought"
@@ -145,7 +145,6 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               rows={3}
               className="jackbox-input"
               placeholder="What was your initial automatic thought?"
-              aria-describedby="automaticThought-desc"
             />
           </div>
 
