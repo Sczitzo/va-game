@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-10-25 - Dynamic Character Limit Accessibility
+**Learning:** Adding `aria-live` to a rapidly changing character counter (e.g., as the user types) creates a terrible, noisy experience for screen reader users. However, color-only feedback (e.g., text turning red) fails WCAG guidelines for users who cannot perceive color.
+**Action:** Remove `aria-live` from the counter string itself. Instead, provide strictly static, visually hidden elements (e.g., `<div role="status" className="sr-only">Approaching limit</div>`) that conditionally mount *only* when critical thresholds are crossed (e.g., 80% and 100%), providing context without overwhelming the user.
