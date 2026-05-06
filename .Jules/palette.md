@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-05-06 - Dynamic Character Counter Accessibility
+**Learning:** Adding dynamic, progressive feedback (gray -> orange -> red) on input character counters significantly improves UX, but updating text directly visible to screen readers creates too much noise.
+**Action:** Use conditionally rendered visually hidden elements (e.g. `<div role="status" className="sr-only">`) containing strictly static text for character limit warnings rather than relying on changing text or a ternary operator, to ensure a clean accessible experience without overwhelming users.
