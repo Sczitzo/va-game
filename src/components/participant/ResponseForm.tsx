@@ -128,15 +128,31 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 ${
+                alternativeThought.length >= 270
+                  ? 'text-red-600 font-bold'
+                  : alternativeThought.length >= 240
+                  ? 'text-orange-700 font-medium'
+                  : 'text-gray-500'
+              }`}
             >
               {alternativeThought.length} / 300 characters
             </div>
+            {alternativeThought.length >= 240 && alternativeThought.length < 300 && (
+              <div role="status" className="sr-only">
+                Approaching character limit
+              </div>
+            )}
+            {alternativeThought.length === 300 && (
+              <div role="status" className="sr-only">
+                Character limit reached
+              </div>
+            )}
           </div>
 
           <div>
             <label htmlFor="automaticThought" className="block text-sm font-semibold mb-2 text-gray-900">
-              Automatic Thought <span id="automaticThought-desc" className="text-xs text-gray-600">(Optional)</span>
+              Automatic Thought <span className="text-xs text-gray-600">(Optional)</span>
             </label>
             <textarea
               id="automaticThought"
@@ -145,7 +161,6 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               rows={3}
               className="jackbox-input"
               placeholder="What was your initial automatic thought?"
-              aria-describedby="automaticThought-desc"
             />
           </div>
 
