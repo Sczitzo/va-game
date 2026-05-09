@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-11-04 - Soft Confirmation for Facilitator Actions
+**Learning:** Native `window.confirm` dialogs are intrusive and can disrupt the flow, especially for facilitator actions like "End Session". A state-based soft confirmation is preferred.
+**Action:** Use a state-based button transformation (e.g., `showEndConfirm` state, timer to reset) to replace native `confirm` dialogs, requiring a second click within a time window, ensuring safety without blocking modals.
