@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-03-27 - Retaining Context in Soft Confirmations
+**Learning:** When replacing a native `window.confirm()` with an inline state-based soft confirmation, it's critical to preserve all warning text from the original dialog. Stripping out the consequence explanation causes a loss of context. Furthermore, the confirmation window timeout must be long enough (e.g., 10 seconds) to be accessible for screen reader users.
+**Action:** When implementing soft confirmations, ensure the original warning text is rendered and the timeout is sufficiently long (e.g., 10s) or non-existent to pass WCAG timing constraints.
