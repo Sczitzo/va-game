@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,16 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [isConfirmingEnd, setIsConfirmingEnd] = useState(false);
+  const confirmTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (confirmTimeoutRef.current) {
+        clearTimeout(confirmTimeoutRef.current);
+      }
+    };
+  }, []);
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,7 +36,16 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
+    if (!isConfirmingEnd) {
+      setIsConfirmingEnd(true);
+      confirmTimeoutRef.current = setTimeout(() => {
+        setIsConfirmingEnd(false);
+      }, 3000);
+    } else {
+      if (confirmTimeoutRef.current) {
+        clearTimeout(confirmTimeoutRef.current);
+      }
+      setIsConfirmingEnd(false);
       socket.emit('facilitator', {
         type: 'endSession',
         payload: { sessionId },
@@ -84,12 +104,21 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div>
+            <button
+              onClick={handleEndSession}
+              className={`w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring ${
+                isConfirmingEnd ? 'font-bold' : ''
+              }`}
+            >
+              {isConfirmingEnd ? '⚠️ Confirm End Session' : 'End Session'}
+            </button>
+            {isConfirmingEnd && (
+              <div role="alert" className="text-xs text-red-600 mt-1 text-center font-medium">
+                This will generate the session summary.
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
