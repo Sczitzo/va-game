@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
+
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -24,12 +26,28 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
     });
   };
 
+  const [isConfirmingEnd, setIsConfirmingEnd] = useState(false);
+  const endTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+    };
+  }, []);
+
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
+    if (isConfirmingEnd) {
+      if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+      setIsConfirmingEnd(false);
       socket.emit('facilitator', {
         type: 'endSession',
         payload: { sessionId },
       });
+    } else {
+      setIsConfirmingEnd(true);
+      endTimeoutRef.current = setTimeout(() => {
+        setIsConfirmingEnd(false);
+      }, 3000);
     }
   };
 
@@ -84,12 +102,22 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={handleEndSession}
+              aria-label={isConfirmingEnd ? "Confirm End Session" : "End Session"}
+              className={`w-full px-4 py-2 text-white rounded-lg focus-visible-ring transition-colors ${
+                isConfirmingEnd ? 'bg-red-700 font-bold' : 'bg-red-600 hover:bg-red-700'
+              }`}
+            >
+              {isConfirmingEnd ? '⚠️ Confirm End Session' : 'End Session'}
+            </button>
+            {isConfirmingEnd && (
+              <p role="status" className="text-xs text-red-600 font-medium text-center">
+                This will generate the session summary. Click again to confirm.
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
