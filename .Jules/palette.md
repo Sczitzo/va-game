@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-10-25 - Accessible Character Count Feedback
+**Learning:** Character limit counters need progressive visual feedback to warn users, but `aria-live` on the counter number is too noisy for screen readers. Using conditionally rendered static hidden elements is much more accessible.
+**Action:** Implement progressive color changes (gray -> orange-700 -> red-600) for limits, and use statically rendered `sr-only` elements with `role="status"` for threshold warnings instead of dynamic strings.
