@@ -15,3 +15,11 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-05-27 - Redundant ARIA Descriptions
+**Learning:** Linking an input via `aria-describedby` to explanatory text that is already nested inside the input's `<label>` causes screen readers to incorrectly announce the text twice.
+**Action:** Ensure explanatory text inside a `<label>` is naturally read; omit `aria-describedby` unless pointing to external elements.
+
+## 2024-05-27 - Accessible Character Limit Warnings
+**Learning:** Adding `aria-live` directly to a character counter causes noisy screen reader updates on every keystroke.
+**Action:** Use conditionally rendered, strictly static visually hidden elements with `role="status"` to announce only critical thresholds (e.g., "Approaching limit") without spamming the user.
