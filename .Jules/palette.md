@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-06-01 - Progressive Character Limits & Nested Label Semantics
+**Learning:** Using `aria-describedby` to link an input to text already nested within its `<label>` causes duplicate announcements for screen readers. Additionally, a dynamic character counter needs separate, static `role="status"` nodes to announce threshold warnings without causing noisy `aria-live` updates on every keystroke.
+**Action:** Avoid `aria-describedby` for descriptive text inside a label. Use static, conditionally rendered `role="status"` elements alongside progressive visual warnings (orange at 80%, red at 90%) for accessible character limit feedback.
