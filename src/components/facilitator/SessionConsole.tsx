@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,17 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const confirmTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (confirmTimeoutRef.current) {
+        clearTimeout(confirmTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,12 +37,22 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
+    if (!showEndConfirm) {
+      setShowEndConfirm(true);
+      confirmTimeoutRef.current = setTimeout(() => {
+        setShowEndConfirm(false);
+      }, 3000);
+      return;
     }
+
+    if (confirmTimeoutRef.current) {
+      clearTimeout(confirmTimeoutRef.current);
+    }
+
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
   };
 
   if (!sessionState) {
@@ -84,12 +106,25 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div>
+            <button
+              onClick={handleEndSession}
+              className={`w-full px-4 py-2 rounded-lg focus-visible-ring transition-colors duration-200 ${
+                showEndConfirm
+                  ? 'bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white'
+                  : 'bg-red-600 text-white hover:bg-red-700'
+              }`}
+              aria-label={showEndConfirm ? 'Confirm end session?' : undefined}
+            >
+              <span aria-hidden="true">{showEndConfirm ? '⚠️ ' : ''}</span>
+              {showEndConfirm ? 'Confirm End Session' : 'End Session'}
+            </button>
+            {showEndConfirm && (
+              <div role="status" className="text-sm text-red-600 mt-2 font-medium">
+                Are you sure you want to end this session? This will generate the session summary.
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
