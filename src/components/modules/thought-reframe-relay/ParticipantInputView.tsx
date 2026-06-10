@@ -62,6 +62,8 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
     setHasSubmitted(true);
   };
 
+  const MAX_LENGTH = 300;
+
   if (hasSubmitted) {
     return (
       <div className="jackbox-card text-center">
@@ -104,7 +106,30 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
             className="jackbox-input text-base"
             placeholder="Share your balanced perspective..."
             aria-required="false"
+            maxLength={MAX_LENGTH}
+            aria-describedby="reframe-counter"
           />
+          <div
+            id="reframe-counter"
+            className={`text-right text-xs mt-1 ${
+              draftReframe.length >= MAX_LENGTH * 0.9 ? 'text-red-600 font-bold' :
+              draftReframe.length >= MAX_LENGTH * 0.8 ? 'text-orange-700 font-medium' :
+              'text-gray-500'
+            }`}
+            aria-hidden="true"
+          >
+            {draftReframe.length} / {MAX_LENGTH} characters
+          </div>
+          {draftReframe.length >= MAX_LENGTH * 0.8 && draftReframe.length < MAX_LENGTH && (
+            <div role="status" className="sr-only">
+              Approaching character limit
+            </div>
+          )}
+          {draftReframe.length === MAX_LENGTH && (
+            <div role="status" className="sr-only">
+              Character limit reached
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
