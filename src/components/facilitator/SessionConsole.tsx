@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -10,6 +11,7 @@ interface SessionConsoleProps {
 }
 
 export function SessionConsole({ sessionId, sessionState, socket }: SessionConsoleProps) {
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
   const handleStartSession = () => {
     socket.emit('facilitator', {
       type: 'startSession',
@@ -25,12 +27,10 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
-    }
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
   };
 
   if (!sessionState) {
@@ -84,12 +84,38 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div className="space-y-2">
+            {showEndConfirm ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleEndSession}
+                  className="flex-1 px-4 py-2 bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white rounded-lg focus-visible-ring transition-colors duration-200"
+                  aria-label="Confirm end session"
+                >
+                  <span aria-hidden="true">⚠️</span> Confirm End Session?
+                </button>
+                <button
+                  onClick={() => setShowEndConfirm(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg focus-visible-ring transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowEndConfirm(true)}
+                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
+                aria-label="End session"
+              >
+                End Session
+              </button>
+            )}
+            {showEndConfirm && (
+              <p role="status" className="text-sm text-red-600 text-center font-medium mt-2">
+                This will generate the session summary.
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
