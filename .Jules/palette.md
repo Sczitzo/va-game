@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-06-21 - Accessible Progressive Character Limits
+**Learning:** Using `aria-live` on a dynamic character counter creates noisy, disruptive screen reader updates. Static styling also fails to visually warn users when they approach the limit. Additionally, using `aria-describedby` pointing to an element inside a `<label>` causes double announcements.
+**Action:** Implement progressive visual feedback (e.g., orange at 80%, red at 90%) and use conditionally rendered, strictly statically-worded visually hidden elements with `role="status"` to accurately announce approaching and reached limits to screen readers without spamming them. Avoid using `aria-describedby` for explanatory text already within the label.
