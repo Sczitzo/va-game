@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Socket } from 'socket.io-client';
 import type { SessionStatePayload } from '@/types/websocket';
 
@@ -17,6 +18,8 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
     });
   };
 
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
   const handleMarkIntroCompleted = () => {
     socket.emit('facilitator', {
       type: 'markIntroCompleted',
@@ -25,12 +28,11 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
   };
 
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session? This will generate the session summary.')) {
-      socket.emit('facilitator', {
-        type: 'endSession',
-        payload: { sessionId },
-      });
-    }
+    socket.emit('facilitator', {
+      type: 'endSession',
+      payload: { sessionId },
+    });
+    setShowEndConfirm(false);
   };
 
   if (!sessionState) {
@@ -84,12 +86,36 @@ export function SessionConsole({ sessionId, sessionState, socket }: SessionConso
         ) : null}
 
         {sessionState.status !== 'ENDED' && (
-          <button
-            onClick={handleEndSession}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
-          >
-            End Session
-          </button>
+          <div className="space-y-2">
+            {!showEndConfirm ? (
+              <button
+                onClick={() => setShowEndConfirm(true)}
+                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring"
+              >
+                End Session
+              </button>
+            ) : (
+              <div className="space-y-2 p-3 bg-red-50 rounded-lg border border-red-200">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowEndConfirm(false)}
+                    className="flex-1 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 focus-visible-ring"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleEndSession}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus-visible-ring font-medium"
+                  >
+                    Confirm End
+                  </button>
+                </div>
+                <p role="status" className="text-sm text-red-700 text-center font-medium">
+                  ⚠️ This will generate the session summary.
+                </p>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
