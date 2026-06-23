@@ -128,10 +128,28 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             />
             <div
               id="alternativeThought-counter"
-              className="text-right text-xs text-gray-500 mt-1"
+              className={`text-right text-xs mt-1 transition-colors duration-200 ${
+                alternativeThought.length >= 300
+                  ? 'text-red-600 font-bold'
+                  : alternativeThought.length >= 270
+                  ? 'text-red-600 font-bold'
+                  : alternativeThought.length >= 240
+                  ? 'text-orange-700 font-medium'
+                  : 'text-gray-500'
+              }`}
             >
               {alternativeThought.length} / 300 characters
             </div>
+            {alternativeThought.length >= 240 && alternativeThought.length < 300 && (
+              <div role="status" className="sr-only">
+                Approaching limit
+              </div>
+            )}
+            {alternativeThought.length === 300 && (
+              <div role="status" className="sr-only">
+                Character limit reached
+              </div>
+            )}
           </div>
 
           <div>
