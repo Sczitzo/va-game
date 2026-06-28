@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2026-10-25 - Progressive Character Limits
+**Learning:** Applying `aria-live` to a changing character counter creates noisy, disruptive screen reader announcements on every keystroke.
+**Action:** Use conditionally rendered, strictly static visually hidden elements with `role="status"` to provide progressive warnings (e.g., at 80% and 90% capacity) without interrupting the user's typing flow.
