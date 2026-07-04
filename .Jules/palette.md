@@ -15,3 +15,7 @@
 ## 2026-10-24 - Form Success State Feedback
 **Learning:** Temporarily disabling the submit button and changing its state to a success message without wiping the form inputs asynchronously prevents data loss while maintaining clear feedback for the user on successful submissions.
 **Action:** For successful form submissions, temporarily (e.g., 2s) disable the submit button, change its text to a success message, and reset the form inputs immediately rather than inside the timeout.
+
+## 2024-07-04 - Dynamic Character Limit Accessibility
+**Learning:** Applying `aria-live` directly to a changing character count number causes excessively noisy and disruptive screen reader updates with every keystroke.
+**Action:** Use a dynamic visual color scale for sighted users (e.g., changing from gray to orange to red), but conditionally render a completely separate visually hidden (`sr-only`) static warning message with `role="status"` to announce when the user is approaching the limit, rather than announcing every single character change.
