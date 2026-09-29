@@ -19,3 +19,7 @@
 ## 2026-10-25 - Progressive Character Limits
 **Learning:** Announcing every keystroke in a character counter creates noisy screen reader feedback.
 **Action:** Use visually hidden `role="status"` elements that mount at specific thresholds (80%, 90%, 100%) to provide static warnings without disrupting the user.
+
+## 2026-10-25 - Smart Confirm Safety
+**Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
+**Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
