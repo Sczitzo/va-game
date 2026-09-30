@@ -167,13 +167,14 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="careTeamId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Care Team <span className="text-red-500">*</span>
+              Care Team <span className="text-red-600">*</span>
             </label>
             <select
               id="careTeamId"
               value={careTeamId}
               onChange={(e) => setCareTeamId(e.target.value)}
               required
+              aria-required="true"
               className="jackbox-input"
             >
               <option value="">Select a care team</option>
@@ -198,6 +199,7 @@ export default function CreateSessionPage() {
               value={moduleId}
               onChange={(e) => setModuleId(e.target.value)}
               required
+              aria-required="true"
               className="jackbox-input"
             >
               {modules.map((module) => (
@@ -210,13 +212,14 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="promptPackId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Prompt Pack <span className="text-red-500">*</span>
+              Prompt Pack <span className="text-red-600">*</span>
             </label>
             <select
               id="promptPackId"
               value={promptPackId}
               onChange={(e) => setPromptPackId(e.target.value)}
               required
+              aria-required="true"
               className="jackbox-input"
             >
               <option value="">Select a prompt pack</option>
@@ -234,7 +237,7 @@ export default function CreateSessionPage() {
 
           <div>
             <label htmlFor="numRounds" className="block text-sm font-semibold mb-2 text-gray-900">
-              Number of Rounds <span className="text-red-500">*</span>
+              Number of Rounds <span className="text-red-600">*</span>
             </label>
             <input
               id="numRounds"
@@ -244,19 +247,21 @@ export default function CreateSessionPage() {
               value={numRounds}
               onChange={(e) => setNumRounds(parseInt(e.target.value))}
               required
+              aria-required="true"
               className="jackbox-input"
             />
           </div>
 
           <div>
             <label htmlFor="introMediaId" className="block text-sm font-semibold mb-2 text-gray-900">
-              Intro Media <span className="text-red-500">*</span>
+              Intro Media <span className="text-red-600">*</span>
             </label>
             <select
               id="introMediaId"
               value={introMediaId}
               onChange={(e) => setIntroMediaId(e.target.value)}
               required
+              aria-required="true"
               className="jackbox-input"
             >
               <option value="">Select intro media</option>
