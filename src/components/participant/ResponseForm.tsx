@@ -151,7 +151,7 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
 
           <div>
             <label htmlFor="automaticThought" className="block text-sm font-semibold mb-2 text-gray-900">
-              Automatic Thought <span id="automaticThought-desc" className="text-xs text-gray-600">(Optional)</span>
+              Automatic Thought <span className="text-xs text-gray-600">(Optional)</span>
             </label>
             <textarea
               id="automaticThought"
@@ -160,7 +160,6 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               rows={3}
               className="jackbox-input"
               placeholder="What was your initial automatic thought?"
-              aria-describedby="automaticThought-desc"
             />
           </div>
 
@@ -196,37 +195,58 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
             </div>
           </div>
 
-          <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
-              className={`flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed ${
-                isSuccess ? '!opacity-100 !bg-none !bg-green-600 !text-white' : ''
-              }`}
-            >
-              {isSuccess ? (
-                <><span aria-hidden="true">✅</span> Sent!</>
-              ) : isSubmitting ? (
-                <><span aria-hidden="true">⏳</span> Submitting...</>
-              ) : (
-                <><span aria-hidden="true">🚀</span> Submit</>
-              )}
-            </button>
+          <div className="flex flex-col gap-2 pt-2">
+            <div className="flex gap-4">
+              <button
+                type="submit"
+                disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
+                className={`flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isSuccess ? '!opacity-100 !bg-none !bg-green-600 !text-white' : ''
+                }`}
+              >
+                {isSuccess ? (
+                  <><span aria-hidden="true">✅</span> Sent!</>
+                ) : isSubmitting ? (
+                  <><span aria-hidden="true">⏳</span> Submitting...</>
+                ) : (
+                  <><span aria-hidden="true">🚀</span> Submit</>
+                )}
+              </button>
 
-            <button
-              type="button"
-              onClick={handleSkip}
-              className={
-                showSkipConfirm
-                  ? 'jackbox-button bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white focus-visible-ring transition-colors duration-200'
-                  : 'jackbox-button-secondary focus-visible-ring transition-colors duration-200'
-              }
-              aria-label={showSkipConfirm ? 'Confirm skip?' : 'Skip this prompt'}
-              aria-live="polite"
-            >
-              <span aria-hidden="true">{showSkipConfirm ? '⚠️' : '⏭️'}</span>
-              {showSkipConfirm ? ' Confirm Skip?' : ' Skip'}
-            </button>
+              {showSkipConfirm ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSkipConfirm(false)}
+                    className="jackbox-button-secondary focus-visible-ring transition-colors duration-200 px-4"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSkip}
+                    className="jackbox-button bg-red-50 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white focus-visible-ring transition-colors duration-200 px-4"
+                    aria-label="Confirm skip?"
+                  >
+                    <span aria-hidden="true">⚠️</span> Confirm
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSkip}
+                  className="jackbox-button-secondary focus-visible-ring transition-colors duration-200"
+                  aria-label="Skip this prompt"
+                >
+                  <span aria-hidden="true">⏭️</span> Skip
+                </button>
+              )}
+            </div>
+            {showSkipConfirm && (
+              <div role="status" className="text-sm text-red-600 font-medium text-right">
+                Are you sure you want to skip? Your entered response will be lost.
+              </div>
+            )}
           </div>
     </form>
   );
