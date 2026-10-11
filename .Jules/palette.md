@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2026-10-26 - Smart Skip Safety in Thought Reframe Relay
+**Learning:** Reapplying the smart, soft-confirmation pattern for destructive actions (like "Pass") in new components (e.g., Thought Reframe Relay's ParticipantInputView) increases consistency and safety without blocking modals. It ensures users do not accidentally pass when they have partially drafted a response.
+**Action:** Always implement a state-based soft confirmation that resets on input changes for any minor destructive action that could result in data loss.
