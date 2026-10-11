@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2026-10-25 - Smart Pass Safety (Minor Destructive Actions)
+**Learning:** For minor destructive actions (like skipping or passing a form that already contains draft data), implementing a 'soft' confirmation via state-based button transformations that resets automatically on user input is a safe and non-intrusive alternative to heavy blocking modals or `window.confirm()`.
+**Action:** When users attempt a minor destructive action on a form with dirty state, transform the action button to request confirmation rather than triggering a modal.
