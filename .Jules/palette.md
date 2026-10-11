@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2026-10-26 - Nested Label Double Announcements
+**Learning:** Using `aria-describedby` to link an input to explanatory text (like "(Optional)") that is already nested inside its `<label>` element causes screen readers to incorrectly announce the text twice.
+**Action:** Do not use `aria-describedby` for descriptive text if that text is already enclosed within the input's associated `<label>`.
