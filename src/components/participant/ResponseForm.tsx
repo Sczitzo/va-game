@@ -197,28 +197,40 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
           </div>
 
           <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
-              className={`flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed ${
-                isSuccess ? '!opacity-100 !bg-none !bg-green-600 !text-white' : ''
-              }`}
-            >
-              {isSuccess ? (
-                <><span aria-hidden="true">✅</span> Sent!</>
-              ) : isSubmitting ? (
-                <><span aria-hidden="true">⏳</span> Submitting...</>
-              ) : (
-                <><span aria-hidden="true">🚀</span> Submit</>
-              )}
-            </button>
+            {!showSkipConfirm && (
+              <button
+                type="submit"
+                disabled={isSubmitting || !alternativeThought.trim() || isSuccess}
+                className={`flex-1 jackbox-button-primary focus-visible-ring disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isSuccess ? '!opacity-100 !bg-none !bg-green-600 !text-white' : ''
+                }`}
+              >
+                {isSuccess ? (
+                  <><span aria-hidden="true">✅</span> Sent!</>
+                ) : isSubmitting ? (
+                  <><span aria-hidden="true">⏳</span> Submitting...</>
+                ) : (
+                  <><span aria-hidden="true">🚀</span> Submit</>
+                )}
+              </button>
+            )}
+
+            {showSkipConfirm && (
+              <button
+                type="button"
+                onClick={() => setShowSkipConfirm(false)}
+                className="flex-1 jackbox-button-secondary focus-visible-ring transition-colors duration-200"
+              >
+                Cancel
+              </button>
+            )}
 
             <button
               type="button"
               onClick={handleSkip}
               className={
                 showSkipConfirm
-                  ? 'jackbox-button bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white focus-visible-ring transition-colors duration-200'
+                  ? 'flex-1 jackbox-button bg-red-50 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white focus-visible-ring transition-colors duration-200'
                   : 'jackbox-button-secondary focus-visible-ring transition-colors duration-200'
               }
               aria-label={showSkipConfirm ? 'Confirm skip?' : 'Skip this prompt'}
@@ -228,6 +240,12 @@ export function ResponseForm({ sessionId, promptId, socket }: ResponseFormProps)
               {showSkipConfirm ? ' Confirm Skip?' : ' Skip'}
             </button>
           </div>
+
+          {showSkipConfirm && (
+            <p role="status" className="text-sm text-red-600 text-center font-medium mt-2">
+              Are you sure you want to skip? Your typed response will be lost.
+            </p>
+          )}
     </form>
   );
 }
