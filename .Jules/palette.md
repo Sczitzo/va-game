@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2026-10-25 - Consistent Skip Safety
+**Learning:** Different components (ParticipantInputView vs ResponseForm) had inconsistent patterns for the "Skip/Pass" action. One used a soft confirmation while the other skipped instantly.
+**Action:** Standardized minor destructive actions (like passing a turn) to always use a state-based soft confirmation to prevent accidental clicks while maintaining a low-friction experience.
