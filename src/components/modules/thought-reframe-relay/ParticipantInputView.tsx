@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { useThoughtReframeRelayStore } from '@/stores/thought-reframe-relay-store';
 
@@ -24,6 +24,12 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
   } = useThoughtReframeRelayStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassConfirm, setShowPassConfirm] = useState(false);
+
+  // Reset skip confirmation when user types
+  useEffect(() => {
+    setShowPassConfirm(false);
+  }, [draftReframe]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +55,11 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
   };
 
   const handlePass = () => {
+    if (!showPassConfirm) {
+      setShowPassConfirm(true);
+      return;
+    }
+
     socket.emit('participant', {
       type: 'submitResponse',
       sessionId,
@@ -120,9 +131,16 @@ export function ParticipantInputView({ sessionId, promptId, socket }: Participan
           <button
             type="button"
             onClick={handlePass}
-            className="w-full px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 focus-visible-ring"
+            className={
+              showPassConfirm
+                ? 'w-full px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 bg-red-50 text-red-600 border-2 border-red-500 hover:bg-red-500 hover:text-white focus-visible-ring'
+                : 'w-full px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 focus-visible-ring'
+            }
+            aria-label={showPassConfirm ? 'Confirm pass?' : 'Pass – that\'s okay'}
+            aria-live="polite"
           >
-            ⏭️ Pass – that&apos;s okay
+            <span aria-hidden="true">{showPassConfirm ? '⚠️' : '⏭️'}</span>
+            {showPassConfirm ? ' Confirm Pass?' : ' Pass – that\'s okay'}
           </button>
           <p className="text-sm text-center text-gray-500">
             Participation is always voluntary
