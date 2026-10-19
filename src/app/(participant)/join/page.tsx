@@ -77,8 +77,9 @@ export default function JoinPage() {
               className="jackbox-input"
               placeholder="Choose a nickname"
               aria-required="true"
+              aria-describedby="nickname-desc"
             />
-            <p className="mt-2 text-sm text-gray-600">
+            <p id="nickname-desc" className="mt-2 text-sm text-gray-600">
               👥 This will be visible to other participants
             </p>
           </div>
@@ -94,8 +95,9 @@ export default function JoinPage() {
               onChange={(e) => setPseudonymId(e.target.value)}
               className="jackbox-input"
               placeholder="If provided by facilitator"
+              aria-describedby="pseudonymId-desc"
             />
-            <p className="mt-2 text-sm text-gray-600">
+            <p id="pseudonymId-desc" className="mt-2 text-sm text-gray-600">
               🔒 Optional pseudonymous ID provided by your facilitator
             </p>
           </div>
