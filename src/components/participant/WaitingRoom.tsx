@@ -59,7 +59,7 @@ export function WaitingRoom({ participants, roomCode, currentParticipantId }: Wa
               </button>
             </div>
           </div>
-          <p className="text-xl text-gray-700 font-medium">
+          <p className="text-xl text-gray-700 font-medium" aria-live="polite">
             {participants.length === 1 
               ? 'Waiting for more players to join...' 
               : `${participants.length} players joined`}
