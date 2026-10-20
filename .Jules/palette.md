@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2024-03-24 - Screen Reader Announcements
+**Learning:** Dynamic text changes, like player count in the waiting room, are not read by screen readers unless specifically instructed to.
+**Action:** Used `aria-live="polite"` on dynamic text elements to ensure screen readers announce changes without interrupting the user.
