@@ -7,7 +7,7 @@ interface ParticipantListProps {
 export function ParticipantList({ participants }: ParticipantListProps) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="text-lg font-semibold mb-4" aria-live="polite" aria-atomic="true">
         Participants ({participants.length})
       </h2>
       
