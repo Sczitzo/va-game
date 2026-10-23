@@ -41,7 +41,7 @@ export function WaitingRoom({ participants, roomCode, currentParticipantId }: Wa
       <div className="max-w-4xl w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4 animate-bounce">🎮</div>
+          <div className="text-6xl mb-4 animate-bounce" aria-hidden="true">🎮</div>
           <h1 className="jackbox-title jackbox-title-gradient text-4xl md:text-5xl mb-3">
             Waiting Room
           </h1>
@@ -59,7 +59,7 @@ export function WaitingRoom({ participants, roomCode, currentParticipantId }: Wa
               </button>
             </div>
           </div>
-          <p className="text-xl text-gray-700 font-medium">
+          <p className="text-xl text-gray-700 font-medium" aria-live="polite" aria-atomic="true">
             {participants.length === 1 
               ? 'Waiting for more players to join...' 
               : `${participants.length} players joined`}
@@ -114,8 +114,8 @@ export function WaitingRoom({ participants, roomCode, currentParticipantId }: Wa
         {/* Empty State */}
         {participants.length === 0 && (
           <div className="jackbox-card text-center py-12">
-            <div className="text-5xl mb-4 animate-pulse">👤</div>
-            <p className="text-xl text-gray-600">No participants yet...</p>
+            <div className="text-5xl mb-4 animate-pulse" aria-hidden="true">👤</div>
+            <p className="text-xl text-gray-600" aria-live="polite" aria-atomic="true">No participants yet...</p>
           </div>
         )}
 

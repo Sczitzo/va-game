@@ -23,3 +23,7 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+
+## 2026-10-26 - Dynamic Count Announcements & Redundant ARIA Links
+**Learning:** Live participant counts (e.g., in lobbies) must use `aria-live="polite"` so screen readers naturally announce changes. Additionally, applying `aria-describedby` to explanatory text already nested inside a `<label>` causes screen readers to read the text twice.
+**Action:** Always add `aria-live="polite"` and `aria-atomic="true"` to dynamic count texts. Never use `aria-describedby` if the description is already inside the `<label>`.
