@@ -23,3 +23,6 @@
 ## 2026-10-25 - Smart Confirm Safety
 **Learning:** Replacing native `window.confirm()` dialogs with state-based soft confirmations requires explicitly preserving and rendering any secondary contextual information or warnings dynamically with `role="status"` to maintain accessibility and screen reader support.
 **Action:** When extracting native confirm dialogs, ensure both a 'Cancel' button is provided and the original warning text is rendered dynamically with `role="status"`.
+## 2024-05-14 - Replace window.confirm with accessible soft-confirm state
+**Learning:** For minor destructive actions (like passing a turn or skipping an input), full `window.confirm()` dialogs are overkill and lack accessibility features. Instead, using a soft-confirm state on the button itself keeps the user in flow.
+**Action:** When replacing native confirmations, extract the consequence warning (e.g., "Your draft will be discarded") into a dynamic text element below the button and wrap it with `role="status"` to ensure screen readers naturally announce the consequence without interrupting the user.
